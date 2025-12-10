@@ -1,8 +1,5 @@
-google-cloud-dataplex
-google-cloud-storage
-google-cloud-aiplatform[reasoningengine]
-langchain
-langchain-google-vertexai
-pydantic
-python-dotenv
-pytest
+google-cloud-aiplatform>=1.38.0
+google-cloud-storage>=2.14.0
+google-cloud-datacatalog>=3.16.0
+pydantic>=2.0.0
+python-dotenv>=1.0.0
