@@ -3,9 +3,12 @@ from core.vertex_client import VertexAIClient
 from core.dataplex_client import DataplexClient
 from modules.metadata import MetadataEnricher
 
+
+
 from google import genai
 from google.genai import types
 
+from core.github_client import GitHubClient
 
 def create_gemini_client() -> genai.Client:
     """
@@ -68,6 +71,9 @@ def main():
 
         # Cliente Gemini *Developer* (para File Search)
         gemini_client = create_gemini_client()
+
+        # Cliente Github
+        github_client = GitHubClient()
 
     except Exception as e:
         print(f"Error initializing clients: {e}")
@@ -134,6 +140,14 @@ def main():
         print("\nNo suggestions could be generated.")
 
     print("\nFinished Data Governance Agent")
+
+   # --- STEP 3: GITHUB PR ---∫
+    clean_json = metadata_result.replace("```json", "").replace("```", "").strip()
+
+    # 3. GitOps PR
+    pr_url = github_client.create_proposal_pr(clean_json, config.TABLE_ID)
+
+    print(f"\nFinished Data Governance Agent: PR para aprobar cambios: {pr_url}")
 
 
 if __name__ == "__main__":
