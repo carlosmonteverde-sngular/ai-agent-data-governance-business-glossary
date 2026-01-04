@@ -8,7 +8,7 @@ import google.auth
 @dataclass
 class Config:
     """
-    Centralized configuration class for the application.
+    Centralized configuration class for the **Business Glossary Agent**.
     It loads environment variables and sets defaults.
     """
     # Load Global Vars
@@ -18,8 +18,13 @@ class Config:
     PROJECT_ID: str = os.getenv("PROJECT_ID")
     LOCATION: str = os.getenv("LOCATION")
     GCS_BUCKET: str = os.getenv("GCS_BUCKET")
-    DATASET_ID: str = os.getenv("DATASET_ID")
-    TABLE_ID: str = os.getenv("TABLE_ID")
+    # Dataplex specific for Glossary
+    GLOSSARY_ID: str = os.getenv("GLOSSARY_ID", "my-business-glossary")
+    GLOSSARY_LOCATION: str = os.getenv("GLOSSARY_LOCATION", os.getenv("LOCATION"))
+    
+    DATASET_ID: str = os.getenv("DATASET_ID") # Optional, if needed for context
+    TABLE_ID: str = os.getenv("TABLE_ID") # Optional, if needed for context
+    
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY")
     # TODO revisar modelo más adecuado
     MODEL_NAME: str = "gemini-2.5-flash-lite"

@@ -1,154 +1,111 @@
-from config.settings import config
-from core.vertex_client import VertexAIClient
-from core.dataplex_client import DataplexClient
-from modules.metadata import MetadataEnricher
-
-
-
-from google import genai
-from google.genai import types
-
+import os
+from google.api_core.client_options import ClientOptions
+from google.cloud import discoveryengine_v1beta as discoveryengine
+import vertexai
+from vertexai.generative_models import GenerativeModel
 from core.github_client import GitHubClient
 
-def create_gemini_client() -> genai.Client:
+# --- CONFIGURACIÓN TÉCNICA ---
+PROJECT_ID = "pg-gccoe-carlos-monteverde" 
+LOCATION = "us" 
+DATA_STORE_ID = "data-governance-ai-agent_1767099540851" 
+
+def get_context_from_data_store(query: str) -> str:
     """
-    Crea un cliente Gemini en modo *Developer API* (NO Vertex AI),
-    que es el único que soporta File Search a día de hoy.
+    Recupera contexto intentando múltiples campos de datos para Standard Edition.
     """
-    return genai.Client(
-        api_key=config.GEMINI_API_KEY  # API key de Google AI Studio
+    client_options = ClientOptions(api_endpoint=f"{LOCATION}-discoveryengine.googleapis.com")
+    client = discoveryengine.SearchServiceClient(client_options=client_options)
+    
+    # Path del motor de búsqueda
+    serving_config = f"projects/{PROJECT_ID}/locations/{LOCATION}/dataStores/{DATA_STORE_ID}/servingConfigs/default_config"
+
+    # Solicitud básica compatible con Standard Edition
+    request = discoveryengine.SearchRequest(
+        serving_config=serving_config,
+        query=query,
+        page_size=5
     )
 
-
-def get_or_create_file_search_store(
-    gemini_client: genai.Client, display_name: str
-) -> str:
-    """
-    Devuelve el name completo de un File Search Store.
-
-    - Si ya existe uno con ese display_name, lo reutiliza.
-    - Si no existe, lo crea.
-
-    Ejemplo de name devuelto:
-        "fileStores/abcd1234..."  (o formato similar según la versión del SDK)
-    """
-
-    # 1. Buscar si ya existe un store con ese display_name
     try:
-        stores = list(gemini_client.file_search_stores.list())
-        for store in stores:
-            # En las versiones actuales del SDK vienen como atributos directos
-            if getattr(store, "display_name", None) == display_name:
-                print(f"✅ Reutilizando File Search Store existente: {store.name}")
-                return store.name
+        response = client.search(request)
+        context = ""
+        
+        found_docs = list(response.results)
+        print(f"DEBUG: Documentos localizados en la búsqueda: {len(found_docs)}")
+        
+        for result in found_docs:
+            data = result.document.derived_struct_data
+            
+            # Intento 1: Snippets (Fragmentos estándar)
+            snippets = data.get("snippets", [])
+            for s in snippets:
+                text = s.get("snippet", "")
+                if text:
+                    context += text + "\n"
+            
+            # Intento 2: Extracción directa de campos de texto si existen
+            # A veces en Standard, el texto se mapea a campos genéricos
+            ext_data = data.get("extractive_segments", [])
+            for segment in ext_data:
+                content = segment.get("content", "")
+                if content:
+                    context += content + "\n"
 
+        return context.strip()
     except Exception as e:
-        print(f"Error listing File Search stores (no pasa nada grave): {e}")
-
-    # 2. Si no existe, lo creamos
-    print(f"⚙️  Creando nuevo File Search Store con display_name='{display_name}'...")
-    file_search_store = gemini_client.file_search_stores.create(
-        config={"display_name": display_name}
-    )
-    print(f"✅ File Search Store creado: {file_search_store.name}")
-
-    return file_search_store.name
-
+        print(f"⚠️ Error en la búsqueda: {e}")
+        return ""
 
 def main():
-    """
-    Principal orchestrator of the Data Governance Agent.
-    """
-    print("Launching Data Governance Agent")
+    print("🚀 Lanzando Agente de Glosario (Vertex AI Search - Standard Edition)")
 
-    # 1. Initialize Clients
-    try:
-        # Cliente para Vertex (lo que ya tuvieras montado)
-        vertex_client = VertexAIClient()
+    # Inicialización
+    vertexai.init(project=PROJECT_ID, location="us-central1")
+    model = GenerativeModel("gemini-1.5-flash")
+    github_client = GitHubClient()
 
-        # Cliente para Dataplex
-        dataplex_client = DataplexClient()
+    # PASO 1: Búsqueda de contenido
+    # IMPORTANTE: He cambiado la query a una sola palabra clave para maximizar resultados
+    query_test = "Presentacion" 
+    print(f"🔍 Consultando Data Store por: '{query_test}'...")
+    contexto_docs = get_context_from_data_store(query_test)
 
-        # Cliente Gemini *Developer* (para File Search)
-        gemini_client = create_gemini_client()
-
-        # Cliente Github
-        github_client = GitHubClient()
-
-    except Exception as e:
-        print(f"Error initializing clients: {e}")
+    if not contexto_docs:
+        print("❌ El motor encontró los archivos pero no pudo extraer texto legible.")
+        print("💡 Acción recomendada: Ve a la consola de Google Cloud, entra en tu Data Store,")
+        print("   haz clic en el PDF y verifica en 'Document JSON' si el campo 'text' tiene contenido.")
         return
 
-    # --- STEP 0: Build BigQuery resource name ---
-    resource_name = (
-        f"//bigquery.googleapis.com/projects/{config.PROJECT_ID}"
-        f"/datasets/{config.DATASET_ID}/tables/{config.TABLE_ID}"
-    )
+    # PASO 2: Generar glosario JSON
+    prompt = f"""
+    Eres un experto en Gobierno de Datos. Basándote en este texto:
+    
+    {contexto_docs}
+    
+    Genera un glosario de términos de negocio en JSON:
+    {{
+      "glossary_terms": [
+        {{ "term": "nombre", "definition": "definición" }}
+      ]
+    }}
+    Responde solo el JSON.
+    """
 
-    # --- STEP 0.1: File Search Store (creado / resuelto vía código) ---
-    file_search_display_name = getattr(
-        config, "FILE_SEARCH_STORE_DISPLAY_NAME", "datagov-docs-store"
-    )
+    print("🧠 Gemini analizando el texto...")
+    response = model.generate_content(prompt)
+    
+    if response.text:
+        clean_json = response.text.replace("```json", "").replace("```", "").strip()
+        print("\nSugerencia generada:")
+        print(clean_json)
 
-    file_search_store_name = get_or_create_file_search_store(
-        gemini_client=gemini_client,
-        display_name=file_search_display_name,
-    )
-
-    # --- (Opcional) STEP 0.2: Importar documentos al store ---
-    # Esto normalmente lo harías una única vez en un script de bootstrap.
-    # Te dejo el ejemplo por si quieres integrarlo aquí:
-    #
-    # docs_to_import = [
-    #     "docs/Presentacion_Metadatos.pdf",
-    #     "docs/Normativa_Datagov.pdf",
-    # ]
-    # for path in docs_to_import:
-    #     print(f"📄 Importando documento al File Search Store: {path}")
-    #     operation = gemini_client.file_search_stores.upload_to_file_search_store(
-    #         file_search_store_name=file_search_store_name,
-    #         file=path,
-    #         config={"display_name": path},
-    #     )
-    #     print(f"   ➜ Subida lanzada para: {path}")
-
-    # --- STEP 1: Get Current Context from the Catalog ---
-    print(f"\nQuerying Data Catalog...")
-    print(f"   Resource: {resource_name}")
-
-    current_context = dataplex_client.get_entry_context(resource_name)
-
-    print(f"\nRecovered context:\n{current_context}\n")
-
-    # --- STEP 2: Generation of Metadata with Gemini + File Search ---
-    print("Analyzing documentation corpus (File Search) vs current context...")
-
-    metadata_module = MetadataEnricher(
-        vertex_client=vertex_client,
-        gemini_client=gemini_client,
-        file_search_store_name=file_search_store_name,
-    )
-
-    metadata_result = metadata_module.suggest_metadata_with_file_search(
-        current_context=current_context
-    )
-
-    if metadata_result:
-        print("\nGOVERNANCE SUGGESTIONS (JSON):")
-        print(metadata_result)
-    else:
-        print("\nNo suggestions could be generated.")
-
-    print("\nFinished Data Governance Agent")
-
-   # --- STEP 3: GITHUB PR ---∫
-    clean_json = metadata_result.replace("```json", "").replace("```", "").strip()
-
-    # 3. GitOps PR
-    pr_url = github_client.create_proposal_pr(clean_json, config.TABLE_ID)
-
-    print(f"\nFinished Data Governance Agent: PR para aprobar cambios: {pr_url}")
-
+        # PASO 3: GitHub
+        try:
+            pr_url = github_client.create_proposal_pr(clean_json, "glossary_update")
+            print(f"\n✅ Proceso completado. PR: {pr_url}")
+        except Exception as e:
+            print(f"❌ Error GitHub: {e}")
 
 if __name__ == "__main__":
     main()
