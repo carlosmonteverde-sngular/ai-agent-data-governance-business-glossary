@@ -1,6 +1,5 @@
 import os
-from google.api_core.client_options import ClientOptions
-from google.cloud import discoveryengine_v1beta as discoveryengine
+from google.cloud import bigquery
 import vertexai
 from vertexai.generative_models import GenerativeModel
 from core.github_client import GitHubClient
@@ -8,101 +7,85 @@ from core.github_client import GitHubClient
 # --- CONFIGURACIÓN TÉCNICA ---
 PROJECT_ID = "pg-gccoe-carlos-monteverde" 
 LOCATION = "us" 
-DATA_STORE_ID = "data-governance-ai-agent_1767099540851" 
+TARGET_DATASET = "openFormatHealthcare"
+# DATA_STORE_ID ya no es necesario para este enfoque
 
-def get_context_from_data_store(query: str) -> str:
+def get_context_from_bigquery(project_id: str, location: str, dataset_id: str) -> str:
     """
-    Recupera contexto intentando múltiples campos de datos para Standard Edition.
+    Recupera el contexto de los metadatos de las tablas en BigQuery de un dataset específico.
     """
-    client_options = ClientOptions(api_endpoint=f"{LOCATION}-discoveryengine.googleapis.com")
-    client = discoveryengine.SearchServiceClient(client_options=client_options)
+    client = bigquery.Client(project=project_id, location=location)
+    context = ""
     
-    # Path del motor de búsqueda
-    serving_config = f"projects/{PROJECT_ID}/locations/{LOCATION}/dataStores/{DATA_STORE_ID}/servingConfigs/default_config"
-
-    # Solicitud básica compatible con Standard Edition
-    request = discoveryengine.SearchRequest(
-        serving_config=serving_config,
-        query=query,
-        page_size=5
-    )
-
     try:
-        response = client.search(request)
-        context = ""
+        print(f"DEBUG: Listando tablas en el dataset '{dataset_id}'...")
+        # Construir referencia completa del dataset
+        dataset_ref = f"{project_id}.{dataset_id}"
         
-        found_docs = list(response.results)
-        print(f"DEBUG: Documentos localizados en la búsqueda: {len(found_docs)}")
-        
-        for result in found_docs:
-            data = result.document.derived_struct_data
-            
-            # Intento 1: Snippets (Fragmentos estándar)
-            snippets = data.get("snippets", [])
-            for s in snippets:
-                text = s.get("snippet", "")
-                if text:
-                    context += text + "\n"
-            
-            # Intento 2: Extracción directa de campos de texto si existen
-            # A veces en Standard, el texto se mapea a campos genéricos
-            ext_data = data.get("extractive_segments", [])
-            for segment in ext_data:
-                content = segment.get("content", "")
-                if content:
-                    context += content + "\n"
+        try:
+            # Verificar si existe el dataset y listar tablas directo
+            tables = list(client.list_tables(dataset_id))
+        except Exception as e:
+            print(f"⚠️ Error accediendo al dataset {dataset_id}: {e}")
+            return ""
 
-        return context.strip()
+        if not tables:
+             print(f"⚠️ No se encontraron tablas en {dataset_id}.")
+             return ""
+
+        context += f"\nDataset: {dataset_id}\n"
+        
+        for table in tables:
+            # Obtener detalles completos de la tabla para ver descripción y esquema
+            full_table = client.get_table(table)
+            
+            context += f"  Table: {full_table.table_id}\n"
+            if full_table.description:
+                context += f"    Description: {full_table.description}\n"
+            
+            context += "    Columns:\n"
+            for schema_field in full_table.schema:
+                desc_str = f" - Description: {schema_field.description}" if schema_field.description else ""
+                context += f"      - {schema_field.name} ({schema_field.field_type}){desc_str}\n"
+
     except Exception as e:
-        print(f"⚠️ Error en la búsqueda: {e}")
+        print(f"⚠️ Error recuperando metadatos de BigQuery: {e}")
         return ""
 
+    return context.strip()
+
 def main():
-    print("🚀 Lanzando Agente de Glosario (Vertex AI Search - Standard Edition)")
+    print("🚀 Lanzando Agente de Glosario (Vertex AI + BigQuery Metadata)")
 
     # Inicialización
     vertexai.init(project=PROJECT_ID, location="us-central1")
-    model = GenerativeModel("gemini-1.5-flash")
+    model = GenerativeModel("gemini-2.5-flash")
     github_client = GitHubClient()
 
-    # PASO 1: Búsqueda de contenido
-    # IMPORTANTE: He cambiado la query a una sola palabra clave para maximizar resultados
-    query_test = "Presentacion" 
-    print(f"🔍 Consultando Data Store por: '{query_test}'...")
-    contexto_docs = get_context_from_data_store(query_test)
+    # PASO 1: Búsqueda de contexto en BigQuery
+    print(f"🔍 Recuperando metadatos de BigQuery para dataset '{TARGET_DATASET}'...")
+    contexto_metadatos = get_context_from_bigquery(PROJECT_ID, LOCATION, TARGET_DATASET)
 
-    if not contexto_docs:
-        print("❌ El motor encontró los archivos pero no pudo extraer texto legible.")
-        print("💡 Acción recomendada: Ve a la consola de Google Cloud, entra en tu Data Store,")
-        print("   haz clic en el PDF y verifica en 'Document JSON' si el campo 'text' tiene contenido.")
+    if not contexto_metadatos:
+        print("❌ No se pudo recuperar ningún contexto de metadatos de BigQuery.")
+        print("💡 Verifica permisos o que existan datasets/tablas en la ubicación configurada.")
         return
 
-    # PASO 2: Generar glosario JSON
-    prompt = f"""
-    Eres un experto en Gobierno de Datos. Basándote en este texto:
-    
-    {contexto_docs}
-    
-    Genera un glosario de términos de negocio en JSON:
-    {{
-      "glossary_terms": [
-        {{ "term": "nombre", "definition": "definición" }}
-      ]
-    }}
-    Responde solo el JSON.
-    """
+    print(f"✅ Contexto recuperado ({len(contexto_metadatos)} caracteres).")
 
-    print("🧠 Gemini analizando el texto...")
-    response = model.generate_content(prompt)
+    # PASO 2: Generar glosario Estructurado
+    from modules.business_glossary import BusinessGlossaryGenerator
     
-    if response.text:
-        clean_json = response.text.replace("```json", "").replace("```", "").strip()
-        print("\nSugerencia generada:")
+    glossary_gen = BusinessGlossaryGenerator(model_name="gemini-2.5-flash")
+    clean_json = glossary_gen.suggest_glossary_structure(contexto_metadatos)
+    
+    if clean_json:
+        print("\nSugerencia generada (Estructura Dataplex):")
         print(clean_json)
 
         # PASO 3: GitHub
         try:
-            pr_url = github_client.create_proposal_pr(clean_json, "glossary_update")
+            pr_url = github_client.create_proposal_pr(clean_json, "glossary_update_from_bq")
             print(f"\n✅ Proceso completado. PR: {pr_url}")
         except Exception as e:
             print(f"❌ Error GitHub: {e}")

@@ -1,110 +1,77 @@
 from typing import Optional
-
-from core.vertex_client import VertexAIClient
-
-from google import genai
-from google.genai import types
-
+from vertexai.generative_models import GenerativeModel
 
 class BusinessGlossaryGenerator:
-    def __init__(
-        self,
-        vertex_client: VertexAIClient,
-        gemini_client: genai.Client,
-        file_search_store_name: str,
-    ):
+    def __init__(self, model_name: str = "gemini-2.5-flash"):
         """
-        Generador de Glosario de Negocio usando:
-        - Gemini + File Search como fuente documental.
+        Generador de Glosario de Negocio estructurado para Dataplex
+        soportando Categorías y Etiquetas.
         """
-        self.vertex_client = vertex_client
-        self.gemini_client = gemini_client
-        self.file_search_store_name = file_search_store_name
+        self.model = GenerativeModel(model_name)
 
-    def _build_prompt(self, context_description: str = "") -> str:
-        """
-        Construye el prompt para identificación de términos de negocio.
-        """
+    def _build_prompt(self, technical_context: str) -> str:
         return f"""
-        TU ROL: Actúa como un Data Steward experto en Gobierno del Dato.
+        Eres un experto en Gobierno de Datos y Analítica Avanzada.
+        Actúa como un 'Data Steward' corporativo encargado de definir un Glosario de Negocio en Dataplex.
 
-        FUENTES DE INFORMACIÓN:
-        1. El corpus documental accesible mediante File Search
-           (documentación de negocio, políticas, reportes, etc.).
-        2. Contexto adicional (opcional): {context_description}
+        TU TAREA:
+        Analiza los siguientes METADATOS TÉCNICOS de BigQuery y estructura un Glosario de Negocio lógico.
+        
+        CONTEXTO TÉCNICO (Tablas y Columnas):
+        -------------------------------------
+        {technical_context}
+        -------------------------------------
 
-        TU OBJETIVO:
-        Analiza la documentación disponible e IDENTIFICA términos de negocio relevantes para crear o enriquecer un Glosario de Negocio en Dataplex.
-        Un término de negocio debe ser un concepto importante para la organización.
+        REQUISITOS DE ESTRUCTURA (DATAPLEX STYLE):
+        1. **Categorías**: Agrupa los términos en categorías funcionales (ej. 'Health', 'Finance', 'Customer').
+           - Cada categoría debe tener: 'display_name', 'description' (corta), 'overview' (explicación detallada), y 'labels'.
+        2. **Términos**: Dentro de cada categoría, lista los términos de negocio.
+           - Cada término debe tener: 'term', 'definition' (funcional, NO técnica), y sugerencia de 'stewards' (roles).
 
-        Devuelve un JSON con EXACTAMENTE esta estructura:
-
+        SALIDA ESPERADA (JSON ÚNICAMENTE):
         {{
-          "glossary_terms": [
-            {{
-              "term": "<Nombre del término>",
-              "definition": "<Definición clara y concisa del término basada en los documentos>",
-              "synonyms": ["<sinónimo1>", "<sinónimo2>"],
-              "stewards": ["<nombre o rol del responsable si aparece en docs>"],
-              "data_sensitivity_level": "PUBLIC" | "INTERNAL" | "CONFIDENTIAL" | "RESTRICTED",
-              "domain": "<Área de negocio a la que pertenece>"
-            }},
-            // ... más términos identificados
-          ]
+          "glossary": {{
+            "categories": [
+              {{
+                "id": "health_category",
+                "display_name": "Health",
+                "description": "Core health-related concepts and terminology.",
+                "overview": "This category groups core health-related concepts used to describe, identify, and classify diseases...",
+                "labels": {{
+                  "domain": "clinical",
+                  "subdomain": "health"
+                }},
+                "terms": [
+                  {{
+                    "term": "Disease Name",
+                    "definition": "Official and commonly used medical name for a specific condition.",
+                    "related_technical_column": "Enfermedad"
+                  }}
+                ]
+              }}
+            ]
+          }}
         }}
 
-        INSTRUCCIONES IMPORTANTES:
-        - Extrae SOLO términos con definiciones claras en la documentación.
-        - "data_sensitivity_level": Infiérelo del contexto.
-        - Responde ÚNICAMENTE con el bloque JSON, sin explicaciones adicionales.
+        REGLAS:
+        - Infiere las categorías basándote en el contenido de las tablas.
+        - Inventa descripciones ricas y profesionales ('overview').
+        - Usa etiquetas ('labels') útiles como 'domain', 'data_sensitivity', 'source_system'.
+        - Responde SOLO EL JSON VÁLIDO.
         """
 
-    def suggest_glossary_terms(
-        self,
-        context_description: str = "Analiza todos los documentos disponibles.",
-        model: str = "gemini-2.5-flash",
-    ) -> Optional[str]:
+    def suggest_glossary_structure(self, technical_context: str) -> Optional[str]:
         """
-        Usa Gemini + File Search para sugerir términos para el Glosario de Negocio.
-
-        :param context_description: Descripción o foco del análisis.
-        :param model: Nombre del modelo de Gemini a usar.
-        :return: String con el JSON devuelto por el modelo, o None si falla.
+        Genera la estructura del glosario basada en el contexto técnico proporcionado.
         """
-        prompt = self._build_prompt(context_description)
-
-        print("--- Initiating Business Glossary Extraction (File Search) ---")
-        print(f"   Using File Search Store: {self.file_search_store_name}")
-        print(f"   Model: {model}")
-
+        prompt = self._build_prompt(technical_context)
+        print("🧠 Gemini analizando estructura de glosario (Categorías + Etiquetas)...")
+        
         try:
-            response = self.gemini_client.models.generate_content(
-                model=model,
-                contents=[
-                    types.Content(
-                        role="user",
-                        parts=[types.Part(text=prompt)],
-                    )
-                ],
-                config=types.GenerateContentConfig(
-                    tools=[
-                        types.Tool(
-                            file_search=types.FileSearch(
-                                file_search_store_names=[self.file_search_store_name]
-                            )
-                        )
-                    ]
-                ),
-            )
-
-            result_text = getattr(response, "text", None)
-
-            if not result_text:
-                print("⚠️ No se recibió texto en la respuesta de Gemini.")
-                return None
-
-            return result_text.strip()
-
+            response = self.model.generate_content(prompt)
+            if response.text:
+                return response.text.replace("```json", "").replace("```", "").strip()
         except Exception as e:
-            print(f"❌ Error calling Gemini with File Search: {e}")
-            return None
+            print(f"❌ Error generando glosario: {e}")
+        
+        return None
