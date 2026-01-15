@@ -60,6 +60,8 @@ Un Data Steward (usuario) recibe la notificación de la PR en GitHub.
 
 ---
 
+### 2.1 ⚙️De momento, para ejecuciones locales para la publicación en Dataplex y Bigquery se debe de ejecutar el script `scripts/publish_glossary.py`.
+
 ### 3. ⚙️ Publicación Automática (CI/CD)
 Al aprobar (hacer merge) la PR, se dispara automáticamente un flujo de trabajo ("Deploy Business Glossary").
 
