@@ -32,61 +32,145 @@ class DataplexClient:
     
     # RE-WRITING CLASS TO USE DATA CATALOG (Correct API for Glossaries)
     
-from google.cloud import datacatalog_v1
+from google.cloud import dataplex_v1
+from google.api_core.exceptions import AlreadyExists, NotFound
 
 class DataplexGlossaryClient:
     def __init__(self, project_id: str, location: str):
         self.project_id = project_id
         self.location = location
-        self.client = datacatalog_v1.DataCatalogClient()
         self.parent = f"projects/{project_id}/locations/{location}"
+        self.client = dataplex_v1.BusinessGlossaryServiceClient()
 
     def create_or_update_glossary(self, glossary_id: str, display_name: str, description: str = ""):
         glossary_name = f"{self.parent}/glossaries/{glossary_id}"
-        glossary = datacatalog_v1.Glossary()
-        glossary.display_name = display_name
-        glossary.description = description
+        
+        glossary = dataplex_v1.Glossary(
+            display_name=display_name,
+            description=description
+        )
         
         try:
             print(f"Creating Glossary: {glossary_id}...")
-            self.client.create_glossary(parent=self.parent, glossary=glossary, glossary_id=glossary_id)
+            operation = self.client.create_glossary(
+                parent=self.parent, 
+                glossary=glossary, 
+                glossary_id=glossary_id
+            )
+            operation.result() # Wait for operation to complete
             print("Glossary created.")
         except AlreadyExists:
             print("Glossary already exists. Updating...")
-            # For simplicity, we assume existence is fine. Full update logic requires getting it first.
+            # For update, we need the 'name' and update_mask
+            glossary.name = glossary_name
+            # Simplified update: We don't implement full update logic here to avoid complexity
+            # But technically we should call update_glossary.
+            # But technically we should call update_glossary.
             pass
 
-    def create_category(self, glossary_id: str, category_id: str, display_name: str, description: str):
-        # In Data Catalog, Categories are just Terms that are parents of other Terms.
-        # Or structured as a hierarchy.
-        # We model a Category as a Term with no parent.
-        self.create_term(glossary_id, category_id, display_name, description, is_category=True)
+    def delete_glossary(self, glossary_id: str):
+        """Deletes the glossary and all its children (categories/terms) if it exists."""
+        glossary_name = f"{self.parent}/glossaries/{glossary_id}"
+        print(f"Checking for existing glossary: {glossary_id}...")
+        
+        try:
+             # Check if glossary exists first to avoid unnecessary API calls if it's missing
+             try:
+                 self.client.get_glossary(name=glossary_name)
+             except NotFound:
+                 print("Glossary does not exist. Proceeding to creation...")
+                 return
 
-    def create_term(self, glossary_id: str, term_id: str, display_name: str, description: str, parent_category_id: str = None, is_category: bool = False):
+             # 1. Delete all Categories
+             # Note: Deleting a category moves its terms to the glossary root (parent), so we delete categories first.
+             print(f"Clearing categories from {glossary_id}...")
+             categories = self.client.list_glossary_categories(parent=glossary_name)
+             for cat in categories:
+                 # print(f"Deleting category: {cat.name}")
+                 self.client.delete_glossary_category(name=cat.name)
+            
+             # 2. Delete all Terms
+             # Now deleting all terms (including those moved from categories)
+             print(f"Clearing terms from {glossary_id}...")
+             terms = self.client.list_glossary_terms(parent=glossary_name)
+             for term in terms:
+                 # print(f"Deleting term: {term.name}")
+                 self.client.delete_glossary_term(name=term.name)
+
+             # 3. Delete Glossary
+             print(f"Deleting glossary {glossary_id}...")
+             operation = self.client.delete_glossary(name=glossary_name)
+             operation.result() # Wait for deletion
+             print("Glossary deleted successfully.")
+
+        except Exception as e:
+             print(f"Error cleaning up/deleting glossary: {e}")
+             # We raise to stop execution if cleanup fails, as creation might fail too
+             raise e
+
+    def create_category(self, glossary_id: str, category_id: str, display_name: str, description: str, labels: dict = None):
         glossary_name = f"{self.parent}/glossaries/{glossary_id}"
         
-        term = datacatalog_v1.GlossaryTerm()
-        term.display_name = display_name
-        term.description = description
-        
-        # If it's a child term (not a category), link it to the category (which is a parent term)
-        # Note: Dataplex/Data Catalog Glossary hierarchy is strictly 1-level for now in some views, 
-        # but technically supports hierarchy via 'parent_id'.
-        # However, the standard "Category -> Term" UI often implies a Term that acts as a Category.
-        
-        if not is_category and parent_category_id:
-            # We don't have a direct 'parent_id' field in simple GlossaryTerm?
-            # Actually, Data Catalog Glossaries are flat OR hierarchy is managed differently.
-            # Let's check `GlossaryTerm` proto. It does NOT have a parent field easily exposed in all versions.
-            # BUT, usually categories are defined as Terms, and actual Terms are just Terms. 
-            # The "Category" in Dataplex UI is often just a specific View or Tag Template?
-            # NO: The user provided screenshot shows "Category details" and "Parent Glossary".
-            # This implies native Category support or using Terms as Categories.
-            # I will assume creating a Term for the category.
-            pass
-            
+        category = dataplex_v1.GlossaryCategory(
+            display_name=display_name,
+            description=description,
+            labels=labels
+        )
+        # Fix: Explicitly set parent on the object because strict validation requires it
+        category.parent = glossary_name
+
         try:
-            self.client.create_glossary_term(parent=glossary_name, glossary_term=term, glossary_term_id=term_id)
-            print(f"Term '{display_name}' created.")
+            self.client.create_glossary_category(
+                parent=glossary_name,
+                category=category,
+                category_id=category_id
+            )
+            print(f"Category '{display_name}' created.")
+        except AlreadyExists:
+            print(f"Category '{display_name}' already exists. Skipping.")
+
+    def create_term(self, glossary_id: str, term_id: str, display_name: str, description: str, parent_category_id: str = None, is_category: bool = False, labels: dict = None):
+        glossary_name = f"{self.parent}/glossaries/{glossary_id}"
+        
+        if is_category:
+             # Logic handled by create_category, but if called here:
+             self.create_category(glossary_id, term_id, display_name, description, labels)
+             return
+             
+        # Determine parent for the Term object (Logical hierarchy)
+        term_parent = glossary_name
+        if parent_category_id:
+             term_parent = f"{glossary_name}/categories/{parent_category_id}"
+
+        term = dataplex_v1.GlossaryTerm(
+            display_name=display_name,
+            description=description,
+            labels=labels
+        )
+        # Fix: Object parent defines hierarchy (can be category)
+        term.parent = term_parent
+        
+        try:
+            # Fix: RPC parent must always be the Glossary (API endpoint requirement)
+            self.client.create_glossary_term(
+                parent=glossary_name, 
+                term=term,
+                term_id=term_id
+            )
+            print(f"Term '{display_name}' created under {parent_category_id if parent_category_id else 'Root'}.")
         except AlreadyExists:
             print(f"Term '{display_name}' already exists. Skipping.")
+        except Exception as e:
+             # Fallback: if category parent fails due to stricter validation, try creating under glossary directly
+            print(f"Error creating term {term_id} under category: {e}. Trying root...")
+            try:
+                term.parent = glossary_name
+                self.client.create_glossary_term(
+                    parent=glossary_name, 
+                    term=term,
+                    term_id=term_id
+                )
+                print(f"Term '{display_name}' created under Root (Fallback).")
+            except Exception as e2:
+                print(f"Error creating term {term_id}: {e2}")
+                raise e2

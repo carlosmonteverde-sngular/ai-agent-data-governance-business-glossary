@@ -26,7 +26,16 @@ class BusinessGlossaryGenerator:
         1. **Categorías**: Agrupa los términos en categorías funcionales (ej. 'Health', 'Finance', 'Customer').
            - Cada categoría debe tener: 'display_name', 'description' (corta), 'overview' (explicación detallada), y 'labels'.
         2. **Términos**: Dentro de cada categoría, lista los términos de negocio.
-           - Cada término debe tener: 'term', 'definition' (funcional, NO técnica), y sugerencia de 'stewards' (roles).
+           - Cada término debe tener: 
+                - 'term': Nombre del término.
+                - 'definition': Definición funcional (NO técnica).
+                - 'parent_category': La categoría a la que pertenece (referencia explícita).
+                - 'labels': Etiquetas del término (ej. domain, subdomain).
+                - 'overview': Descripción detallada o "long description".
+                - 'related_terms': Lista de términos relacionados.
+                - 'synonym_terms': Lista de sinónimos.
+                - 'contacts': Lista de contactos sugeridos (ej. roles como 'Data Steward', 'Owner').
+                - 'related_technical_column': Columna técnica relacionada.
 
         SALIDA ESPERADA (JSON ÚNICAMENTE):
         {{
@@ -45,6 +54,15 @@ class BusinessGlossaryGenerator:
                   {{
                     "term": "Disease Name",
                     "definition": "Official and commonly used medical name for a specific condition.",
+                    "parent_category": "Health",
+                    "labels": {{
+                        "domain": "clinical",
+                        "subdomain": "health"
+                    }},
+                    "overview": "The disease_name field represents the standardized alphanumeric code used to uniquely classify...",
+                    "related_terms": ["Disease identifier", "Disease code"],
+                    "synonym_terms": ["Illness name", "Condition name"],
+                    "contacts": ["Data Steward (Clinical)", "Chief Medical Officer"],
                     "related_technical_column": "Enfermedad"
                   }}
                 ]
@@ -54,7 +72,8 @@ class BusinessGlossaryGenerator:
         }}
 
         REGLAS:
-        - Infiere las categorías basándote en el contenido de las tablas.
+        - Infiere las categorías basándote en el contenido de las tablas. NO te limites a una sola categoría si hay conceptos distintos.
+        - Crea tantas categorías como sean necesarias para organizar lógicamente todos los conceptos.
         - Inventa descripciones ricas y profesionales ('overview').
         - Usa etiquetas ('labels') útiles como 'domain', 'data_sensitivity', 'source_system'.
         - Responde SOLO EL JSON VÁLIDO.
