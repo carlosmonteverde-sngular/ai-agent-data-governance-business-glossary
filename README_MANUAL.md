@@ -17,6 +17,23 @@ graph LR
 
 ---
 
+## Prerequisitos
+
+1. Activar el entorno virtual:
+   ```bash
+   .venv\Scripts\activate
+   ```
+2. Instalar dependencias:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Configurar credenciales de GCP (Application Default Credentials):
+   ```bash
+   gcloud auth application-default login
+   ```
+4. Configurar variables de entorno (ver `config/`).
+
+
 ### 1. 🚀 Ejecución del Agente (Generación)
 El proceso comienza ejecutando el agente localmente o programado.
 
