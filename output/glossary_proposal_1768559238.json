@@ -1,0 +1,540 @@
+{
+  "glossary": {
+    "categories": [
+      {
+        "id": "pharmaceutical_product_info",
+        "display_name": "Pharmaceutical Product Information",
+        "description": "Core data points describing a pharmaceutical drug, its properties, and identification.",
+        "overview": "This category encompasses all fundamental information pertaining to a pharmaceutical drug, including its unique identifiers, chemical structure, approval status, and commercial names. It serves as the primary reference for understanding the core characteristics and lifecycle of a drug entity within the organization's data landscape. Data within this category supports R&D, regulatory affairs, and market analysis functions by providing a comprehensive profile of each drug.",
+        "labels": {
+          "domain": "pharmaceuticals",
+          "subdomain": "product_data",
+          "data_sensitivity": "public_internal"
+        },
+        "terms": [
+          {
+            "term": "Drug Identifier",
+            "definition": "A unique alphanumeric code used to identify a specific pharmaceutical drug molecule within the system.",
+            "parent_category": "Pharmaceutical Product Information",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "product_data",
+              "data_sensitivity": "public"
+            },
+            "overview": "This identifier serves as the primary key for drug entities, enabling precise tracking and linkage across various datasets. It is crucial for maintaining data integrity and consistency for each distinct drug throughout its lifecycle.",
+            "related_terms": ["Parent Drug Identifier", "Drug Indication Identifier"],
+            "synonym_terms": ["Molecule ID", "Drug ID", "Compound Identifier"],
+            "contacts": ["Data Steward (Product)", "R&D Lead"],
+            "related_technical_column": "drug_molecule.id"
+          },
+          {
+            "term": "Drug Name",
+            "definition": "The officially recognized or commonly used name for a pharmaceutical drug.",
+            "parent_category": "Pharmaceutical Product Information",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "product_data",
+              "data_sensitivity": "public"
+            },
+            "overview": "This field provides the primary human-readable name for a drug. It can be a generic name, a chemical name, or a research code, depending on the stage of development and regulatory status. It is essential for communication and branding.",
+            "related_terms": ["Commercial Trade Names", "Drug Synonyms"],
+            "synonym_terms": ["Compound Name", "Product Name"],
+            "contacts": ["Data Steward (Product)", "Marketing Lead"],
+            "related_technical_column": "drug_molecule.name"
+          },
+          {
+            "term": "Drug Classification Type",
+            "definition": "Categorization of a drug based on its chemical structure, mechanism of action, or therapeutic class.",
+            "parent_category": "Pharmaceutical Product Information",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "product_data",
+              "data_sensitivity": "public"
+            },
+            "overview": "This classification helps in understanding the fundamental nature and potential applications of a drug. Examples might include 'Small Molecule', 'Biologic', 'Vaccine', 'Gene Therapy', etc., informing R&D strategy and regulatory pathways.",
+            "related_terms": ["Linked Biological Targets"],
+            "synonym_terms": ["Compound Class", "Pharmaceutical Type", "Drug Category"],
+            "contacts": ["Data Steward (Product)", "R&D Lead"],
+            "related_technical_column": "drug_molecule.drugType"
+          },
+          {
+            "term": "Black Box Warning Status",
+            "definition": "Indicates whether a drug carries a 'Black Box Warning' from regulatory authorities, signifying serious or life-threatening risks.",
+            "parent_category": "Pharmaceutical Product Information",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "pharmacovigilance",
+              "data_sensitivity": "public"
+            },
+            "overview": "A Boolean flag (TRUE/FALSE) indicating the presence of the strongest safety warning that a regulatory body (e.g., FDA) can mandate for prescription drug products. This warning alerts prescribers and patients to significant potential adverse effects and requires strict adherence.",
+            "related_terms": ["Warning Description", "Drug Safety Warning"],
+            "synonym_terms": ["BBW Status", "Serious Risk Warning"],
+            "contacts": ["Data Steward (Safety)", "Regulatory Affairs Lead"],
+            "related_technical_column": "drug_molecule.blackBoxWarning"
+          },
+          {
+            "term": "Canonical SMILES Representation",
+            "definition": "A unique textual representation of a drug molecule's chemical structure using the Simplified Molecular-Input Line-Entry System (SMILES).",
+            "parent_category": "Pharmaceutical Product Information",
+            "labels": {
+              "domain": "chemistry",
+              "subdomain": "molecular_structure",
+              "data_sensitivity": "public"
+            },
+            "overview": "SMILES is a linear notation that describes the structure of chemical molecules using short ASCII strings. 'Canonical' means it's a standardized, unique representation for a given molecule, facilitating chemical informatics tasks, searching, and database storage.",
+            "related_terms": ["InChIKey Identifier"],
+            "synonym_terms": ["SMILES Code", "Chemical Structure String"],
+            "contacts": ["Data Steward (Chemistry)", "Computational Chemistry Lead"],
+            "related_technical_column": "drug_molecule.canonicalSmiles"
+          },
+          {
+            "term": "InChIKey Identifier",
+            "definition": "A hashed, non-proprietary identifier for chemical substances, enabling easy web searching for chemical information.",
+            "parent_category": "Pharmaceutical Product Information",
+            "labels": {
+              "domain": "chemistry",
+              "subdomain": "molecular_structure",
+              "data_sensitivity": "public"
+            },
+            "overview": "The International Chemical Identifier Key (InChIKey) is a compact, fixed-length character string derived from an InChI, designed to be easily used in web searches and databases. It provides a non-proprietary, unique reference to a chemical substance's connectivity and stereochemistry.",
+            "related_terms": ["Canonical SMILES Representation"],
+            "synonym_terms": ["Chemical Identifier Key", "Standard Compound Key"],
+            "contacts": ["Data Steward (Chemistry)", "Computational Chemistry Lead"],
+            "related_technical_column": "drug_molecule.inchiKey"
+          },
+          {
+            "term": "Year of First Approval",
+            "definition": "The calendar year when the drug received its initial regulatory approval for marketing in any country.",
+            "parent_category": "Pharmaceutical Product Information",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "regulatory_data",
+              "data_sensitivity": "public"
+            },
+            "overview": "This integer field tracks the historical point of market entry for a drug, providing a key metric for product lifecycle analysis, competitive intelligence, and understanding market trends.",
+            "related_terms": ["Drug Approval Status"],
+            "synonym_terms": ["Approval Year", "Initial Market Approval Date (Year)"],
+            "contacts": ["Data Steward (Product)", "Regulatory Affairs Lead"],
+            "related_technical_column": "drug_molecule.yearOfFirstApproval"
+          },
+          {
+            "term": "Maximum Clinical Trial Phase",
+            "definition": "The highest phase of clinical development reached by the drug, indicating its progress through trials.",
+            "parent_category": "Pharmaceutical Product Information",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "clinical_development",
+              "data_sensitivity": "internal"
+            },
+            "overview": "This numeric field (typically 0-4) reflects the most advanced stage a drug has reached in human clinical trials. Phase 4 often refers to post-marketing surveillance. This metric is critical for R&D pipeline assessment and investment decisions.",
+            "related_terms": ["Drug Approval Status"],
+            "synonym_terms": ["Highest Trial Phase", "Clinical Development Phase"],
+            "contacts": ["Data Steward (Clinical)", "Clinical Development Lead"],
+            "related_technical_column": "drug_molecule.maximumClinicalTrialPhase"
+          },
+          {
+            "term": "Parent Drug Identifier",
+            "definition": "The unique identifier of a parent or related drug molecule, indicating a structural or developmental relationship.",
+            "parent_category": "Pharmaceutical Product Information",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "product_data",
+              "data_sensitivity": "internal"
+            },
+            "overview": "This field links a drug molecule to a broader or precursor entity, useful for tracking derivatives, metabolites, or related compounds within a research program or chemical family tree.",
+            "related_terms": ["Drug Identifier", "Related Chemical Entity IDs"],
+            "synonym_terms": ["Related Compound ID", "Precursor ID", "Core Molecule ID"],
+            "contacts": ["Data Steward (Product)", "R&D Lead"],
+            "related_technical_column": "drug_molecule.parentId"
+          },
+          {
+            "term": "Drug Withdrawal Status",
+            "definition": "A boolean flag indicating whether the drug has been formally withdrawn from the market.",
+            "parent_category": "Pharmaceutical Product Information",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "regulatory_data",
+              "data_sensitivity": "public"
+            },
+            "overview": "This field captures the regulatory status concerning market availability. A 'TRUE' value signifies that the drug is no longer available for prescription or sale due to safety concerns, efficacy issues, or commercial reasons. It's crucial for pharmacovigilance.",
+            "related_terms": ["Drug Approval Status", "Black Box Warning Status"],
+            "synonym_terms": ["Market Withdrawal Status", "Product Discontinuation Flag"],
+            "contacts": ["Data Steward (Regulatory)", "Regulatory Affairs Lead"],
+            "related_technical_column": "drug_molecule.hasBeenWithdrawn"
+          },
+          {
+            "term": "Drug Approval Status",
+            "definition": "A boolean flag indicating whether the drug has received regulatory approval for marketing.",
+            "parent_category": "Pharmaceutical Product Information",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "regulatory_data",
+              "data_sensitivity": "public"
+            },
+            "overview": "This field denotes the current regulatory status of the drug. A 'TRUE' value means it has been approved by relevant health authorities for at least one indication in one region, enabling commercialization.",
+            "related_terms": ["Year of First Approval", "Drug Withdrawal Status"],
+            "synonym_terms": ["Regulatory Approval Flag", "Marketed Status"],
+            "contacts": ["Data Steward (Regulatory)", "Regulatory Affairs Lead"],
+            "related_technical_column": "drug_molecule.isApproved"
+          },
+          {
+            "term": "Commercial Trade Names",
+            "definition": "A collection of proprietary brand names under which a drug is marketed and sold.",
+            "parent_category": "Pharmaceutical Product Information",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "product_data",
+              "data_sensitivity": "public"
+            },
+            "overview": "This field stores a list of commercial names given to the drug by pharmaceutical companies. It helps identify a drug by its brand identity in different markets and is key for marketing and sales efforts.",
+            "related_terms": ["Drug Name"],
+            "synonym_terms": ["Brand Names", "Proprietary Names"],
+            "contacts": ["Data Steward (Product)", "Marketing Lead"],
+            "related_technical_column": "drug_molecule.tradeNames"
+          },
+          {
+            "term": "Drug Synonyms",
+            "definition": "Alternative names or commonly used unofficial names for the drug molecule.",
+            "parent_category": "Pharmaceutical Product Information",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "product_data",
+              "data_sensitivity": "public"
+            },
+            "overview": "This field lists various names by which a drug might be known, including research codes, historical names, or abbreviations, aiding in comprehensive search and identification across different terminologies.",
+            "related_terms": ["Drug Name"],
+            "synonym_terms": ["Alternative Names", "Alias Names", "Other Names"],
+            "contacts": ["Data Steward (Product)", "R&D Lead"],
+            "related_technical_column": "drug_molecule.synonyms"
+          },
+          {
+            "term": "External Drug References",
+            "definition": "Pointers to external databases or systems that contain additional information about the drug.",
+            "parent_category": "Pharmaceutical Product Information",
+            "labels": {
+              "domain": "data_management",
+              "subdomain": "external_data_integration",
+              "data_sensitivity": "public"
+            },
+            "overview": "This field provides links or identifiers to external data sources (e.g., PubChem, DrugBank) for enriched information, facilitating broader data integration and research by leveraging publicly available scientific knowledge.",
+            "related_terms": ["Drug Identifier"],
+            "synonym_terms": ["External IDs", "Linked Resources", "Cross-Database IDs"],
+            "contacts": ["Data Steward (Data Integration)", "Bioinformatics Specialist"],
+            "related_technical_column": "drug_molecule.crossReferences"
+          },
+          {
+            "term": "Related Chemical Entity IDs",
+            "definition": "Identifiers for chemical entities that are structurally related or derived from the main drug molecule.",
+            "parent_category": "Pharmaceutical Product Information",
+            "labels": {
+              "domain": "chemistry",
+              "subdomain": "molecular_structure",
+              "data_sensitivity": "internal"
+            },
+            "overview": "This field contains a list of ChEMBL IDs for child compounds, such as metabolites or closely related analogs, providing a hierarchical view of chemical relationships important for drug metabolism and safety studies.",
+            "related_terms": ["Drug Identifier", "Parent Drug Identifier"],
+            "synonym_terms": ["Derivative IDs", "Metabolite IDs", "Analog IDs"],
+            "contacts": ["Data Steward (Chemistry)", "R&D Lead"],
+            "related_technical_column": "drug_molecule.childChemblIds"
+          },
+          {
+            "term": "Linked Disease Associations",
+            "definition": "A list of diseases that have a known association or therapeutic link with the drug molecule.",
+            "parent_category": "Pharmaceutical Product Information",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "research_development",
+              "data_sensitivity": "internal"
+            },
+            "overview": "This field provides preliminary links to diseases that are biologically or therapeutically connected to the drug, useful for early-stage research, target identification, and hypothesis generation for new indications.",
+            "related_terms": ["Linked Biological Targets", "Reported Indications"],
+            "synonym_terms": ["Associated Conditions", "Disease Targets (Exploratory)"],
+            "contacts": ["Data Steward (R&D)", "Disease Area Expert"],
+            "related_technical_column": "drug_molecule.linkedDiseases"
+          },
+          {
+            "term": "Linked Biological Targets",
+            "definition": "A list of biological targets (e.g., proteins, receptors) that the drug molecule is known to interact with.",
+            "parent_category": "Pharmaceutical Product Information",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "research_development",
+              "data_sensitivity": "internal"
+            },
+            "overview": "This field details the molecular mechanisms of action by listing the specific biological entities that the drug aims to modulate. It's critical for understanding pharmacology, drug development, and potential off-target effects.",
+            "related_terms": ["Drug Classification Type", "Linked Disease Associations"],
+            "synonym_terms": ["Drug Targets", "Mechanism of Action Targets"],
+            "contacts": ["Data Steward (R&D)", "Pharmacology Lead"],
+            "related_technical_column": "drug_molecule.linkedTargets"
+          },
+          {
+            "term": "Drug Product Description",
+            "definition": "A detailed textual summary providing general information about the drug.",
+            "parent_category": "Pharmaceutical Product Information",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "product_data",
+              "data_sensitivity": "public"
+            },
+            "overview": "This field offers a descriptive overview of the drug, potentially including its therapeutic class, general use, historical context, and other pertinent high-level information suitable for general understanding.",
+            "related_terms": ["Drug Name"],
+            "synonym_terms": ["Product Summary", "General Drug Information", "Drug Profile"],
+            "contacts": ["Data Steward (Product)", "Medical Affairs Lead"],
+            "related_technical_column": "drug_molecule.description"
+          }
+        ]
+      },
+      {
+        "id": "clinical_indications_usage",
+        "display_name": "Clinical Indications & Efficacy",
+        "description": "Information on the medical conditions a drug is prescribed for and its approved uses.",
+        "overview": "This category contains data related to the therapeutic applications of pharmaceutical drugs. It details the specific diseases or conditions for which a drug has been indicated, as well as its formal approval status for those indications. This information is crucial for understanding drug utility, market positioning, and regulatory compliance regarding patient treatment, supporting clinical development, medical affairs, and commercial strategies.",
+        "labels": {
+          "domain": "pharmaceuticals",
+          "subdomain": "clinical_usage",
+          "data_sensitivity": "public_internal"
+        },
+        "terms": [
+          {
+            "term": "Drug Indication Identifier",
+            "definition": "A unique identifier for the drug associated with a specific set of indications, typically linking to the primary Drug Identifier.",
+            "parent_category": "Clinical Indications & Efficacy",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "clinical_usage",
+              "data_sensitivity": "public"
+            },
+            "overview": "This identifier serves to connect specific indication records back to the main drug molecule, ensuring accurate mapping of a drug to its therapeutic uses. It facilitates the retrieval of all associated indications for a given drug.",
+            "related_terms": ["Drug Identifier"],
+            "synonym_terms": ["Indication Drug ID", "Linked Drug ID (Indications)"],
+            "contacts": ["Data Steward (Clinical)", "Clinical Operations Lead"],
+            "related_technical_column": "drug_indication.id"
+          },
+          {
+            "term": "Reported Indications",
+            "definition": "A collection of medical conditions or diseases for which a drug has been reported or suggested as a treatment.",
+            "parent_category": "Clinical Indications & Efficacy",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "clinical_usage",
+              "data_sensitivity": "internal"
+            },
+            "overview": "This field lists all known or reported uses of a drug, which may include both officially approved indications and off-label uses or those currently under investigation. It provides a comprehensive view of potential therapeutic areas.",
+            "related_terms": ["Approved Indications", "Linked Disease Associations"],
+            "synonym_terms": ["Therapeutic Uses (Reported)", "Disease Targets (Exploratory)"],
+            "contacts": ["Data Steward (Clinical)", "Medical Affairs Lead"],
+            "related_technical_column": "drug_indication.indications"
+          },
+          {
+            "term": "Approved Indications",
+            "definition": "The specific medical conditions or diseases for which a drug has received formal regulatory approval for treatment.",
+            "parent_category": "Clinical Indications & Efficacy",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "regulatory_data",
+              "data_sensitivity": "public"
+            },
+            "overview": "This field contains a list of only those indications that have been officially sanctioned by regulatory bodies (e.g., FDA, EMA), making it critical for prescribing information, marketing claims, and reimbursement decisions.",
+            "related_terms": ["Reported Indications", "Drug Approval Status"],
+            "synonym_terms": ["Licensed Indications", "On-Label Uses", "Regulatory Approved Uses"],
+            "contacts": ["Data Steward (Clinical)", "Regulatory Affairs Lead"],
+            "related_technical_column": "drug_indication.approvedIndications"
+          },
+          {
+            "term": "Number of Indications",
+            "definition": "The total count of distinct indications (both reported and approved) associated with a particular drug.",
+            "parent_category": "Clinical Indications & Efficacy",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "clinical_usage",
+              "data_sensitivity": "public"
+            },
+            "overview": "This integer field provides a quick metric for the breadth of a drug's therapeutic application, useful for portfolio analysis, competitive benchmarking, and understanding market potential.",
+            "related_terms": ["Reported Indications", "Approved Indications"],
+            "synonym_terms": ["Total Indications", "Indication Count"],
+            "contacts": ["Data Steward (Clinical)", "Business Intelligence Analyst"],
+            "related_technical_column": "drug_indication.indicationCount"
+          }
+        ]
+      },
+      {
+        "id": "drug_safety_regulatory_warnings",
+        "display_name": "Drug Safety & Regulatory Warnings",
+        "description": "Details on potential adverse effects, toxicity, and regulatory warnings associated with drugs.",
+        "overview": "This category consolidates critical safety information and regulatory warnings related to pharmaceutical products. It includes data on toxicity classifications, country-specific warnings, and detailed descriptions of potential risks. This data is essential for pharmacovigilance, risk management, and ensuring patient safety by providing transparent information on known side effects and contraindications. It is vital for regulatory reporting and post-market surveillance.",
+        "labels": {
+          "domain": "pharmaceuticals",
+          "subdomain": "pharmacovigilance",
+          "data_sensitivity": "internal_restricted"
+        },
+        "terms": [
+          {
+            "term": "Warning Identifier",
+            "definition": "A unique identifier for a specific regulatory warning or safety alert associated with a drug.",
+            "parent_category": "Drug Safety & Regulatory Warnings",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "pharmacovigilance",
+              "data_sensitivity": "public"
+            },
+            "overview": "This numerical identifier uniquely identifies each distinct warning record, allowing for tracking and referencing of individual safety concerns across different drugs or time periods. It is crucial for maintaining audit trails of safety communications.",
+            "related_terms": ["Drug Identifier", "Type of Warning"],
+            "synonym_terms": ["Safety Warning ID", "Adverse Event ID"],
+            "contacts": ["Data Steward (Safety)", "Pharmacovigilance Lead"],
+            "related_technical_column": "drug_warning.id"
+          },
+          {
+            "term": "Related ChEMBL IDs for Warning",
+            "definition": "A list of ChEMBL identifiers for drugs or chemical entities related to the specific warning.",
+            "parent_category": "Drug Safety & Regulatory Warnings",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "pharmacovigilance",
+              "data_sensitivity": "public"
+            },
+            "overview": "This field links the warning to one or more chemical entities registered in the ChEMBL database, providing a standardized reference for the compounds involved in the safety concern, facilitating cross-database analysis.",
+            "related_terms": ["Drug Identifier", "External Drug References"],
+            "synonym_terms": ["Associated Drug IDs (ChEMBL)", "Compound IDs for Warning"],
+            "contacts": ["Data Steward (Safety)", "Pharmacovigilance Lead"],
+            "related_technical_column": "drug_warning.chemblIds"
+          },
+          {
+            "term": "Toxicity Classification",
+            "definition": "A categorization of the nature or severity of the toxic effect associated with a drug.",
+            "parent_category": "Drug Safety & Regulatory Warnings",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "pharmacovigilance",
+              "data_sensitivity": "public"
+            },
+            "overview": "This classification helps in understanding the type of adverse reaction (e.g., hepatotoxicity, cardiotoxicity, nephrotoxicity) and its potential impact, guiding risk assessment, management strategies, and clinical monitoring.",
+            "related_terms": ["Warning Description", "Type of Warning"],
+            "synonym_terms": ["Adverse Effect Class", "Risk Category", "Harm Classification"],
+            "contacts": ["Data Steward (Safety)", "Toxicology Lead"],
+            "related_technical_column": "drug_warning.toxicityClass"
+          },
+          {
+            "term": "Warning Issuing Country",
+            "definition": "The country or regulatory jurisdiction that issued the specific drug warning.",
+            "parent_category": "Drug Safety & Regulatory Warnings",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "regulatory_data",
+              "data_sensitivity": "public"
+            },
+            "overview": "This field indicates the geographical origin of the warning, which is crucial as regulatory requirements, identified risks, and warning standards can vary significantly by region. It impacts global pharmacovigilance strategies.",
+            "related_terms": ["Warning Issuance Year"],
+            "synonym_terms": ["Regulatory Jurisdiction", "Country of Origin (Warning)"],
+            "contacts": ["Data Steward (Regulatory)", "Regulatory Affairs Lead"],
+            "related_technical_column": "drug_warning.country"
+          },
+          {
+            "term": "Warning Description",
+            "definition": "A detailed textual explanation of the drug warning, outlining the specific risks or adverse effects.",
+            "parent_category": "Drug Safety & Regulatory Warnings",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "pharmacovigilance",
+              "data_sensitivity": "public"
+            },
+            "overview": "This field provides comprehensive context about the safety concern, including clinical manifestations, incidence, and recommendations for mitigation. It is critical for informed decision-making by healthcare providers and patients regarding drug use.",
+            "related_terms": ["Toxicity Classification", "Type of Warning"],
+            "synonym_terms": ["Safety Alert Details", "Adverse Event Description", "Warning Statement"],
+            "contacts": ["Data Steward (Safety)", "Medical Affairs Lead"],
+            "related_technical_column": "drug_warning.description"
+          },
+          {
+            "term": "Warning References",
+            "definition": "Citations or links to source documents, studies, or regulatory notices supporting the drug warning.",
+            "parent_category": "Drug Safety & Regulatory Warnings",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "pharmacovigilance",
+              "data_sensitivity": "public"
+            },
+            "overview": "This field provides traceability and validation for the warning information, allowing users to consult original sources for further details and scientific evidence, ensuring transparency and scientific rigor.",
+            "related_terms": ["Warning Description"],
+            "synonym_terms": ["Supporting Documents", "Regulatory Links", "Evidence Links"],
+            "contacts": ["Data Steward (Safety)", "Medical Information Specialist"],
+            "related_technical_column": "drug_warning.references"
+          },
+          {
+            "term": "Type of Warning",
+            "definition": "A classification indicating the nature or category of the warning (e.g., 'Drug Interaction', 'Contraindication', 'Adverse Reaction').",
+            "parent_category": "Drug Safety & Regulatory Warnings",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "pharmacovigilance",
+              "data_sensitivity": "public"
+            },
+            "overview": "This field categorizes the warning based on its primary trigger or subject, helping to quickly identify the type of safety concern being communicated. It aids in filtering and analyzing specific kinds of risks.",
+            "related_terms": ["Toxicity Classification", "Warning Description"],
+            "synonym_terms": ["Warning Category", "Safety Alert Type"],
+            "contacts": ["Data Steward (Safety)", "Pharmacovigilance Lead"],
+            "related_technical_column": "drug_warning.warningType"
+          },
+          {
+            "term": "Warning Issuance Year",
+            "definition": "The calendar year when the specific drug warning was issued or first reported.",
+            "parent_category": "Drug Safety & Regulatory Warnings",
+            "labels": {
+              "domain": "pharmaceuticals",
+              "subdomain": "regulatory_data",
+              "data_sensitivity": "public"
+            },
+            "overview": "This integer field captures the temporal aspect of the warning, allowing for chronological analysis of safety events, regulatory actions over time, and monitoring trends in drug safety profiles.",
+            "related_terms": ["Warning Issuing Country"],
+            "synonym_terms": ["Year of Warning", "Reporting Year"],
+            "contacts": ["Data Steward (Safety)", "Regulatory Affairs Lead"],
+            "related_technical_column": "drug_warning.year"
+          },
+          {
+            "term": "EFO Term for Warning",
+            "definition": "A standardized term from the Experimental Factor Ontology (EFO) describing the adverse event or condition related to the warning.",
+            "parent_category": "Drug Safety & Regulatory Warnings",
+            "labels": {
+              "domain": "ontology",
+              "subdomain": "biomedical_terminology",
+              "data_sensitivity": "public"
+            },
+            "overview": "EFO provides a high-quality, application-agnostic, and openly available ontology for human diseases and other experimental factors, ensuring consistent semantic representation of warning-related conditions across various data sources.",
+            "related_terms": ["EFO Identifier for Warning", "Warning Description"],
+            "synonym_terms": ["EFO Adverse Event Term", "Ontology Term (Warning)"],
+            "contacts": ["Data Steward (Ontology)", "Bioinformatics Specialist"],
+            "related_technical_column": "drug_warning.efo_term"
+          },
+          {
+            "term": "EFO Identifier for Warning",
+            "definition": "The unique identifier from the Experimental Factor Ontology (EFO) corresponding to the 'EFO Term for Warning'.",
+            "parent_category": "Drug Safety & Regulatory Warnings",
+            "labels": {
+              "domain": "ontology",
+              "subdomain": "biomedical_terminology",
+              "data_sensitivity": "public"
+            },
+            "overview": "This alphanumeric ID provides a machine-readable, unambiguous reference to the EFO term, facilitating automated processing, data linkage with other ontological resources, and semantic analysis of warning data.",
+            "related_terms": ["EFO Term for Warning", "EFO ID for Warning Classification"],
+            "synonym_terms": ["EFO ID (Adverse Event)", "Ontology ID (Warning)"],
+            "contacts": ["Data Steward (Ontology)", "Bioinformatics Specialist"],
+            "related_technical_column": "drug_warning.efo_id"
+          },
+          {
+            "term": "EFO ID for Warning Classification",
+            "definition": "The unique identifier from the Experimental Factor Ontology (EFO) that classifies the *type* of warning itself, not just the associated adverse event.",
+            "parent_category": "Drug Safety & Regulatory Warnings",
+            "labels": {
+              "domain": "ontology",
+              "subdomain": "biomedical_terminology",
+              "data_sensitivity": "public"
+            },
+            "overview": "This EFO ID categorizes the nature of the warning (e.g., 'Drug Contraindication', 'Adverse Drug Reaction') according to a standardized ontological hierarchy, enabling more precise analysis of warning categories and regulatory impact.",
+            "related_terms": ["Type of Warning", "EFO Identifier for Warning"],
+            "synonym_terms": ["EFO Warning Category ID", "Ontology ID (Warning Type)"],
+            "contacts": ["Data Steward (Ontology)", "Bioinformatics Specialist"],
+            "related_technical_column": "drug_warning.efo_id_for_warning_class"
+          }
+        ]
+      }
+    ]
+  }
+}
