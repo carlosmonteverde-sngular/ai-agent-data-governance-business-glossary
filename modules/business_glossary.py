@@ -77,6 +77,7 @@ class BusinessGlossaryGenerator:
         - Inventa descripciones ricas y profesionales ('overview').
         - Usa etiquetas ('labels') útiles como 'domain', 'data_sensitivity', 'source_system'.
         - Responde SOLO EL JSON VÁLIDO.
+        - Devuelve los resultados en Español
         """
 
     def suggest_glossary_structure(self, technical_context: str) -> Optional[str]:

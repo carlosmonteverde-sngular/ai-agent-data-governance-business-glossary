@@ -25,7 +25,7 @@ graph LR
    ```
 2. Instalar dependencias:
    ```bash
-   pip install -r requirements.txt
+   pip install -r requirements.txt o python -m pip install -r requirements.txt
    ```
 3. Configurar credenciales de GCP (Application Default Credentials):
    ```bash
