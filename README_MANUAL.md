@@ -43,9 +43,9 @@ python main.py
 ```
 
 **Lo que hace el agente:**
-1.  Conecta a **BigQuery** y lee los metadatos (tablas, columnas, comentarios) del dataset `openFormatHealthcare`.
+1.  Conecta a **BigQuery** y lee los metadatos (tablas, columnas, comentarios) del dataset deseado.
 2.  Envía estos metadatos a **Gemini 2.5 Flash**.
-3.  Gemini genera una estructura de Glosario rica (Categorías, Términos, Descripciones funcionales).
+3.  Gemini genera una estructura de Glosario rica (Categorías, Términos, Descripciones funcionales) a partir del metadatado ingestado de la fuente establecida.
 4.  Crea una **rama nueva** en GitHub y abre una **Pull Request (PR)** con la propuesta en formato JSON.
 
 ---
@@ -80,7 +80,7 @@ Al aprobar (hacer merge) la PR, se dispara automáticamente un flujo de trabajo 
 ### 4. 📊 Auditoría y Trazabilidad
 Como paso final, el sistema registra la operación.
 
-**Destino:** BigQuery (`openFormatHealthcare.glossary_audit_log`).
+**Destino:** BigQuery (`TABLA_DESEADA.glossary_audit_log`).
 **Datos registrados:**
 *   `timestamp`: Fecha y hora exactas.
 *   `actor`: Usuario de GitHub que aprobó el cambio.
