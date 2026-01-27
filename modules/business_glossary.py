@@ -1,5 +1,6 @@
 from typing import Optional
-from vertexai.generative_models import GenerativeModel
+from google import genai
+from config.settings import config
 
 class BusinessGlossaryGenerator:
     def __init__(self, model_name: str = "gemini-2.5-flash"):
@@ -7,7 +8,12 @@ class BusinessGlossaryGenerator:
         Generador de Glosario de Negocio estructurado para Dataplex
         soportando Categorías y Etiquetas.
         """
-        self.model = GenerativeModel(model_name)
+        self.client = genai.Client(
+            vertexai=True,
+            project=config.PROJECT_ID,
+            location=config.LOCATION
+        )
+        self.model_name = model_name
 
     def _build_prompt(self, technical_context: str) -> str:
         return f"""
@@ -88,7 +94,10 @@ class BusinessGlossaryGenerator:
         print("🧠 Gemini analizando estructura de glosario (Categorías + Etiquetas)...")
         
         try:
-            response = self.model.generate_content(prompt)
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=prompt
+            )
             if response.text:
                 return response.text.replace("```json", "").replace("```", "").strip()
         except Exception as e:

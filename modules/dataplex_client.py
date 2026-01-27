@@ -147,17 +147,26 @@ class DataplexGlossaryClient:
             description=description,
             labels=labels
         )
-        # Fix: Object parent defines hierarchy (can be category)
-        term.parent = term_parent
+        # Fix: RPC parent determines where the term is created (Glossary or Category)
+        # But for 'parent' argument, we MUST use the Glossary Name (Collection parent)
+        # Hierarchy is defined by the 'parent' field on the term object or name?
+        # Let's try setting term.parent (if available) and calling with glossary parent.
         
+        # Inspect availability of parent field
+        if "parent" in term.__class__.meta.fields:
+             print(f"DEBUG: Setting term.parent to {term_parent}")
+             term.parent = term_parent
+        else:
+             print("DEBUG: Term object has no 'parent' field visible in meta.")
+
         try:
-            # Fix: RPC parent must always be the Glossary (API endpoint requirement)
-            self.client.create_glossary_term(
-                parent=glossary_name, 
-                term=term,
-                term_id=term_id
-            )
-            print(f"Term '{display_name}' created under {parent_category_id if parent_category_id else 'Root'}.")
+             # Always use Glossary as Parent for the RPC call
+             self.client.create_glossary_term(
+                 parent=glossary_name, 
+                 term=term,
+                 term_id=term_id
+             )
+             print(f"Term '{display_name}' created under {parent_category_id if parent_category_id else 'Root'}.")
         except AlreadyExists:
             print(f"Term '{display_name}' already exists. Skipping.")
         except Exception as e:

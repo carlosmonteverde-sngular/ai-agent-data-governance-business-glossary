@@ -66,8 +66,19 @@ def main():
         
         # Parse new structure: { "glossary": { "categories": [...], "terms": [...] } }
         glossary_data = data.get("glossary", {})
+        print(f"DEBUG: Glossary keys: {glossary_data.keys()}")
         categories = glossary_data.get("categories", [])
+        if categories:
+            print(f"DEBUG: First category keys: {categories[0].keys()}")
         terms = glossary_data.get("terms", [])
+
+        # FIX: If terms are nested inside categories (Standard Gemini Output), collect them
+        if not terms:
+            print("ℹ️ Terms not found at root, extracting from categories...")
+            for cat in categories:
+                cat_terms = cat.get("terms", [])
+                if cat_terms:
+                    terms.extend(cat_terms)
         
         print(f"📊 Found {len(categories)} categories and {len(terms)} terms.")
 

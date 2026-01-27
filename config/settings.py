@@ -32,11 +32,28 @@ class Config:
     # --- GitHub Config ---
     GITHUB_REPO: str = os.getenv("GITHUB_REPO", "")  # Ej: "usuario/repo"
     GITHUB_BASE_BRANCH: str = os.getenv("GITHUB_BASE_BRANCH", "main")
-    GITHUB_SECRET_NAME: str = os.getenv("GITHUB_SECRET_NAME", "github-token-agent")
+    GITHUB_SECRET_NAME: str = os.getenv("GITHUB_SECRET_NAME", "github-token")
+    GEMINI_SECRET_NAME: str = os.getenv("GEMINI_SECRET_NAME", "gemini-api-key")
+    
     # --- Flask Config ---
-    PORT: int = os.environ.get("PORT", 8080)
+    PORT: int = int(os.environ.get("PORT", "8080"))
 
     def __post_init__(self):
+        # 1. Intentar resolver GEMINI_API_KEY si es placeholder o None
+        # Comprobamos variantes comunes de placeholder
+        is_placeholder = (
+            not self.GEMINI_API_KEY 
+            or self.GEMINI_API_KEY.strip() == "GEMINI API KEY" 
+            or self.GEMINI_API_KEY.strip() == "GEMINI_API_KEY"
+        )
+        
+        if is_placeholder:
+            secret_value = self._fetch_secret(self.GEMINI_SECRET_NAME)
+            if secret_value:
+                self.GEMINI_API_KEY = secret_value
+            else:
+                print("❌ No se pudo recuperar GEMINI_API_KEY del Secret Manager.")
+
         # Validation of global variables
         missing_fields = [
             field_name for field_name, value in vars(self).items()
