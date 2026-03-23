@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Business Glossary Agent</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg: #0f172a;
+            --surface: rgba(30, 41, 59, 0.75);
+            --surface-hover: rgba(51, 65, 85, 0.85);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #10b981;
+            --error: #ef4444;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.2) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+            color: var(--text);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .glass-panel {
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .glass-panel:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #e0e7ff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.6rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: color 0.3s;
+        }
+
+        input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+            box-sizing: border-box;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .form-group:focus-within label {
+            color: var(--text);
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            background: rgba(15, 23, 42, 0.8);
+            box-shadow: 0 0 0 3px var(--primary-glow), inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        button.run-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px -10px var(--primary);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button.run-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px -10px var(--primary);
+            filter: brightness(1.1);
+        }
+        
+        button.run-btn:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+
+        button.run-btn:disabled {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .terminal {
+            flex-grow: 1;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 14px;
+            padding: 1.5rem;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--accent);
+            overflow-y: auto;
+            min-height: 400px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.05);
+            scroll-behavior: smooth;
+        }
+
+        .terminal::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .terminal::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.2);
+            border-radius: 4px;
+        }
+
+        .terminal::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+
+        .terminal p {
+            margin: 0 0 8px 0;
+            line-height: 1.5;
+            word-break: break-all;
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.4rem 1rem;
+            background: rgba(100, 116, 139, 0.15);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.05);
+            color: var(--text-muted);
+            transition: all 0.3s;
+        }
+
+        .status-badge.running {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent);
+            border-color: rgba(16, 185, 129, 0.2);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+        }
+        
+        .status-badge.running::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            margin-right: 8px;
+            box-shadow: 0 0 8px var(--accent);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+
+        .loader {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        button.running .loader {
+            display: block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+            body {
+                align-items: flex-start;
+                padding-top: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Configuration Panel -->
+        <div class="glass-panel">
+            <h1>Agent Builder</h1>
+            <p class="subtitle">AI Data Governance & Glossary Generator</p>
+
+            <div class="form-group">
+                <label>Target Dataplex Glossary ID</label>
+                <input type="text" id="glossaryId" value="business-glossary-v1" style="border-color: var(--primary);">
+            </div>
+
+            <div class="form-group">
+                <label>Glosarry Display Name (Dataplex UI)</label>
+                <input type="text" id="glossaryDisplayName" value="Business Glossary">
+            </div>
+
+            <div class="form-group">
+                <label>BigQuery Metadata Dataset</label>
+                <input type="text" id="dataset" value="pharmaceutical_drugs">
+            </div>
+
+            <div class="form-group">
+                <label>GCP Project ID</label>
+                <input type="text" id="projectId" value="pg-gccoe-carlos-monteverde">
+            </div>
+
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" id="location" value="us">
+            </div>
+
+            <!-- Spacer -->
+            <div style="flex-grow: 1;"></div>
+
+            <button class="run-btn" id="runBtn" onclick="runAgent()">
+                <span>Ejecutar Agente</span>
+                <div class="loader"></div>
+            </button>
+        </div>
+
+        <!-- Terminal Panel -->
+        <div class="glass-panel logs-container">
+            <div class="terminal-header">
+                <h1 style="font-size: 1.5rem; margin: 0;">Execution Logs</h1>
+                <span class="status-badge" id="statusBadge">Ready</span>
+            </div>
+            <div class="terminal" id="terminal">
+                <p style="color: var(--text-muted);">[System] Esperando configuración de inicio...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let eventSource = null;
+
+        function scrollTerminalToBottom() {
+            const terminal = document.getElementById('terminal');
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function appendLog(message) {
+            const terminal = document.getElementById('terminal');
+            const p = document.createElement('p');
+            
+            // Premium Log Coloring
+            let color = '#a78bfa'; // Default purple-ish
+            
+            if(message.includes('🚀')) color = '#f8fafc'; // White for kicks
+            else if(message.includes('✅')) color = 'var(--accent)'; 
+            else if(message.includes('❌') || message.includes('Error')) color = 'var(--error)';
+            else if(message.includes('🧹') || message.includes('🔍')) color = '#38bdf8'; // Blue
+            else if(message.includes('⚠️')) color = '#f59e0b'; // Yellow/Orange
+            else if(message.includes('DEBUG:')) color = '#64748b'; // Muted
+            
+            p.style.color = color;
+            p.textContent = `> ${message}`;
+            terminal.appendChild(p);
+            scrollTerminalToBottom();
+        }
+
+        async function runAgent() {
+            const btn = document.getElementById('runBtn');
+            const terminal = document.getElementById('terminal');
+            const badge = document.getElementById('statusBadge');
+            
+            // Prepare UI state for running
+            btn.classList.add('running');
+            btn.disabled = true;
+            btn.querySelector('span').textContent = 'Ejecutando...';
+            
+            terminal.innerHTML = '';
+            appendLog('Inicializando proceso en backend...');
+            
+            badge.className = 'status-badge running';
+            badge.textContent = 'Active Process';
+            
+            const payload = {
+                project_id: document.getElementById('projectId').value,
+                location: document.getElementById('location').value,
+                target_dataset: document.getElementById('dataset').value,
+                glossary_id: document.getElementById('glossaryId').value,
+                glossary_display_name: document.getElementById('glossaryDisplayName').value
+            };
+
+            // Setup Server-Sent Events for Logs
+            if(eventSource) eventSource.close();
+            eventSource = new EventSource('/stream');
+            
+            eventSource.onmessage = function(event) {
+                if (event.data === "DONE") {
+                    eventSource.close();
+                    
+                    // Reset UI
+                    btn.classList.remove('running');
+                    btn.disabled = false;
+                    btn.querySelector('span').textContent = 'Ejecutar Agente';
+                    
+                    badge.className = 'status-badge';
+                    badge.textContent = 'Completed';
+                    badge.style.background = 'rgba(16, 185, 129, 0.15)';
+                    badge.style.color = 'var(--accent)';
+                    badge.style.borderColor = 'var(--accent)';
+                } else {
+                    appendLog(event.data);
+                }
+            };
+
+            // Send trigger request
+            try {
+                const response = await fetch('/run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if(!response.ok) {
+                    throw new Error("HTTP " + response.status);
+                }
+            } catch (err) {
+                appendLog(`❌ Invocación fallida: ${err.message}`);
+                btn.classList.remove('running');
+                btn.disabled = false;
+                btn.querySelector('span').textContent = 'Ejecutar Agente';
+                eventSource.close();
+            }
+        }
+    </script>
+</body>
+</html>
