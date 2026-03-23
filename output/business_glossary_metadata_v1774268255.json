@@ -1,0 +1,553 @@
+{
+  "glossary": {
+    "categories": [
+      {
+        "id": "farmacos_moleculas",
+        "display_name": "Fármacos y Moléculas",
+        "description": "Conceptos fundamentales relacionados con las sustancias farmacológicas, su identificación, propiedades y estado regulatorio.",
+        "overview": "Esta categoría abarca la terminología esencial para describir los fármacos como entidades moleculares, incluyendo sus identificadores únicos, nombres comunes y comerciales, propiedades químicas, tipo de sustancia, y su situación actual respecto a la aprobación y comercialización. Es crucial para el seguimiento del ciclo de vida de un medicamento desde su descubrimiento hasta su potencial retiro del mercado.",
+        "labels": {
+          "domain": "farmacología",
+          "subdomain": "química_farmacéutica",
+          "data_governance_level": "standard"
+        },
+        "terms": [
+          {
+            "term": "Identificador de Molécula Farmacéutica",
+            "definition": "Identificador único asignado a una molécula farmacéutica para su rastreo y referencia en diversas fuentes de datos.",
+            "parent_category": "Fármacos y Moléculas",
+            "labels": {
+              "domain": "farmacología",
+              "data_sensitivity": "public",
+              "data_type": "string"
+            },
+            "overview": "Este campo representa el identificador primario de la molécula de un fármaco. Es un código estandarizado que permite vincular la información de diferentes conjuntos de datos relacionados con el mismo principio activo. Es fundamental para la integridad y consistencia de los datos en todo el ecosistema de información sobre fármacos.",
+            "related_terms": ["ID de Indicación de Fármaco"],
+            "synonym_terms": ["ID de Fármaco", "Identificador de Principio Activo"],
+            "contacts": ["Data Steward (Química)", "Arquitecto de Datos"],
+            "related_technical_column": "id"
+          },
+          {
+            "term": "Nombre de Fármaco",
+            "definition": "Nombre común o químico de la molécula farmacéutica.",
+            "parent_category": "Fármacos y Moléculas",
+            "labels": {
+              "domain": "farmacología",
+              "data_sensitivity": "public",
+              "data_type": "string"
+            },
+            "overview": "Este término se refiere al nombre formal y reconocido de una sustancia farmacológica. Puede ser un nombre genérico, químico o la denominación común internacional (DCI). Es el principal identificador legible por humanos para referirse a un medicamento.",
+            "related_terms": ["Nombres Comerciales", "Sinónimos del Fármaco"],
+            "synonym_terms": ["Nombre Genérico", "Denominación Química"],
+            "contacts": ["Data Steward (Contenidos)", "Farmacólogo Principal"],
+            "related_technical_column": "name"
+          },
+          {
+            "term": "SMILES Canónico",
+            "definition": "Notación de línea estandarizada utilizada para representar la estructura de una molécula química de forma única.",
+            "parent_category": "Fármacos y Moléculas",
+            "labels": {
+              "domain": "química",
+              "data_sensitivity": "public",
+              "data_type": "string"
+            },
+            "overview": "SMILES (Simplified Molecular Input Line Entry Specification) canónico es un método que permite describir la estructura de una molécula de forma inequívoca en una cadena de texto. Es esencial para la búsqueda y el análisis computacional de propiedades químicas y relaciones estructura-actividad.",
+            "related_terms": ["InChIKey"],
+            "synonym_terms": ["Representación SMILES", "Estructura Química en Línea"],
+            "contacts": ["Científico de Datos (Química)", "Data Steward (Investigación)"],
+            "related_technical_column": "canonicalSmiles"
+          },
+          {
+            "term": "InChIKey",
+            "definition": "Una 'key' o clave corta, estandarizada y no propietaria, derivada de la InChI (International Chemical Identifier), utilizada para buscar y vincular sustancias químicas en bases de datos.",
+            "parent_category": "Fármacos y Moléculas",
+            "labels": {
+              "domain": "química",
+              "data_sensitivity": "public",
+              "data_type": "string"
+            },
+            "overview": "InChIKey es un hash criptográfico de longitud fija que proporciona una forma compacta de identificar una molécula química, facilitando su indexación y búsqueda en grandes conjuntos de datos químicos sin necesidad de almacenar la estructura completa. Es una herramienta clave para la interoperabilidad en la química digital.",
+            "related_terms": ["SMILES Canónico"],
+            "synonym_terms": ["Clave InChI"],
+            "contacts": ["Científico de Datos (Química)", "Data Steward (Investigación)"],
+            "related_technical_column": "inchiKey"
+          },
+          {
+            "term": "Tipo de Fármaco",
+            "definition": "Clasificación de la molécula farmacéutica basada en su composición o mecanismo principal (ej. molécula pequeña, anticuerpo).",
+            "parent_category": "Fármacos y Moléculas",
+            "labels": {
+              "domain": "farmacología",
+              "data_sensitivity": "public",
+              "data_type": "string"
+            },
+            "overview": "Este campo especifica la categoría general a la que pertenece un fármaco. La clasificación puede basarse en su tamaño, estructura química, origen o cómo interactúa con el organismo. Es útil para análisis de portafolio y estrategia de desarrollo.",
+            "related_terms": [],
+            "synonym_terms": ["Categoría de Fármaco", "Clase Terapéutica General"],
+            "contacts": ["Data Steward (Farmacia)", "Analista de Portafolio"],
+            "related_technical_column": "drugType"
+          },
+          {
+            "term": "Advertencia de Recuadro Negro",
+            "definition": "Indicador de la existencia de una advertencia de seguridad seria emitida por las autoridades reguladoras para un fármaco.",
+            "parent_category": "Fármacos y Moléculas",
+            "labels": {
+              "domain": "seguridad_farmacológica",
+              "data_sensitivity": "public",
+              "data_type": "boolean"
+            },
+            "overview": "Una Advertencia de Recuadro Negro (Black Box Warning, en inglés) es la advertencia más estricta que la FDA (o agencias equivalentes) puede exigir para un medicamento recetado. Indica que los estudios médicos han demostrado que el fármaco tiene riesgos de efectos secundarios graves o potencialmente mortales. Este campo booleano señala si tal advertencia está activa para el fármaco.",
+            "related_terms": ["Clase de Toxicidad", "Descripción de Advertencia"],
+            "synonym_terms": ["Black Box Warning"],
+            "contacts": ["Data Steward (Farmacovigilancia)", "Oficial de Seguridad del Medicamento"],
+            "related_technical_column": "blackBoxWarning"
+          },
+          {
+            "term": "Año de Primera Aprobación",
+            "definition": "El año en que el fármaco fue aprobado por primera vez por una autoridad reguladora.",
+            "parent_category": "Fármacos y Moléculas",
+            "labels": {
+              "domain": "regulación_farmacéutica",
+              "data_sensitivity": "public",
+              "data_type": "integer"
+            },
+            "overview": "Este campo registra el año calendario en que el medicamento recibió su primera aprobación para su uso en humanos por parte de una agencia reguladora (ej. FDA, EMA). Es un dato clave para el seguimiento del ciclo de vida del producto y análisis históricos.",
+            "related_terms": ["Aprobación del Fármaco", "Fármaco Retirado"],
+            "synonym_terms": ["Fecha de Aprobación Inicial"],
+            "contacts": ["Data Steward (Regulatorio)", "Analista de Mercado"],
+            "related_technical_column": "yearOfFirstApproval"
+          },
+          {
+            "term": "Fase Máxima de Ensayo Clínico",
+            "definition": "La fase más avanzada de ensayo clínico alcanzada por la molécula, indicando su progreso en el desarrollo.",
+            "parent_category": "Fármacos y Moléculas",
+            "labels": {
+              "domain": "investigación_clínica",
+              "data_sensitivity": "public",
+              "data_type": "float"
+            },
+            "overview": "Representa el estadio más avanzado de desarrollo pre-comercial para un fármaco, siguiendo las fases estándar de ensayos clínicos (Fase I, II, III). Un valor '0' puede indicar que no ha entrado en ensayos clínicos o que no se conoce. Es un indicador clave del nivel de madurez en el pipeline de un fármaco.",
+            "related_terms": ["Aprobación del Fármaco"],
+            "synonym_terms": ["Etapa de Ensayo Clínico", "Progreso de Desarrollo Clínico"],
+            "contacts": ["Data Steward (Investigación)", "Director de Ensayos Clínicos"],
+            "related_technical_column": "maximumClinicalTrialPhase"
+          },
+          {
+            "term": "ID de Molécula Padre",
+            "definition": "Identificador de la molécula principal de la que se deriva la molécula actual, en caso de existir una relación jerárquica.",
+            "parent_category": "Fármacos y Moléculas",
+            "labels": {
+              "domain": "química_farmacéutica",
+              "data_sensitivity": "public",
+              "data_type": "string"
+            },
+            "overview": "Este campo es relevante para moléculas que son metabolitos, profármacos o derivados de una molécula principal. Permite establecer relaciones de parentesco químico y trazar el origen de variantes o productos de biotransformación de un fármaco base.",
+            "related_terms": ["Identificador de Molécula Farmacéutica", "IDs ChEMBL de Derivados"],
+            "synonym_terms": ["ID de Precursor"],
+            "contacts": ["Data Steward (Química)", "Bioinformático"],
+            "related_technical_column": "parentId"
+          },
+          {
+            "term": "Fármaco Retirado",
+            "definition": "Indica si el fármaco ha sido retirado del mercado por razones de seguridad, eficacia o comerciales.",
+            "parent_category": "Fármacos y Moléculas",
+            "labels": {
+              "domain": "regulación_farmacéutica",
+              "data_sensitivity": "public",
+              "data_type": "boolean"
+            },
+            "overview": "Este campo booleano señala si la molécula farmacéutica ya no está disponible para su prescripción o venta debido a una decisión regulatoria o comercial. Es un dato crítico para la farmacovigilancia y el análisis histórico de la seguridad de los medicamentos.",
+            "related_terms": ["Aprobación del Fármaco", "Advertencia de Recuadro Negro"],
+            "synonym_terms": ["Retiro del Mercado", "Discontinuado"],
+            "contacts": ["Data Steward (Regulatorio)", "Oficial de Seguridad del Medicamento"],
+            "related_technical_column": "hasBeenWithdrawn"
+          },
+          {
+            "term": "Aprobación del Fármaco",
+            "definition": "Indica si el fármaco ha recibido la aprobación regulatoria para su comercialización y uso.",
+            "parent_category": "Fármacos y Moléculas",
+            "labels": {
+              "domain": "regulación_farmacéutica",
+              "data_sensitivity": "public",
+              "data_type": "boolean"
+            },
+            "overview": "Este campo booleano indica si la autoridad reguladora competente ha concedido permiso para que el fármaco sea comercializado y utilizado para las indicaciones especificadas. Es un hito fundamental en el ciclo de vida de un medicamento.",
+            "related_terms": ["Año de Primera Aprobación", "Fármaco Retirado", "Fase Máxima de Ensayo Clínico"],
+            "synonym_terms": ["Estado de Aprobación", "Aprobado Reguladoramente"],
+            "contacts": ["Data Steward (Regulatorio)", "Jefe de Asuntos Regulatorios"],
+            "related_technical_column": "isApproved"
+          },
+          {
+            "term": "Nombres Comerciales",
+            "definition": "Lista de nombres de marca o de fantasía bajo los cuales se comercializa el fármaco.",
+            "parent_category": "Fármacos y Moléculas",
+            "labels": {
+              "domain": "marketing_farmacéutico",
+              "data_sensitivity": "public",
+              "data_type": "array<string>"
+            },
+            "overview": "Colección de los diversos nombres de marca que las compañías farmacéuticas utilizan para comercializar un medicamento específico. Una misma molécula puede tener múltiples nombres comerciales en diferentes mercados o presentaciones. Este campo ayuda a identificar un fármaco por su denominación comercial.",
+            "related_terms": ["Nombre de Fármaco", "Sinónimos del Fármaco"],
+            "synonym_terms": ["Marcas de Fármacos", "Nombres de Patente"],
+            "contacts": ["Data Steward (Marketing)", "Gerente de Producto"],
+            "related_technical_column": "tradeNames"
+          },
+          {
+            "term": "Sinónimos del Fármaco",
+            "definition": "Lista de nombres alternativos o variaciones del nombre común de la molécula farmacéutica.",
+            "parent_category": "Fármacos y Moléculas",
+            "labels": {
+              "domain": "farmacología",
+              "data_sensitivity": "public",
+              "data_type": "array<string>"
+            },
+            "overview": "Este campo contiene una colección de nombres secundarios, abreviaturas o denominaciones menos comunes que también se utilizan para referirse a la misma molécula farmacéutica. Es útil para la búsqueda y la vinculación de información cuando el nombre principal no es utilizado.",
+            "related_terms": ["Nombre de Fármaco", "Nombres Comerciales"],
+            "synonym_terms": ["Nombres Alternativos", "Abreviaturas de Fármacos"],
+            "contacts": ["Data Steward (Contenidos)", "Farmacólogo"],
+            "related_technical_column": "synonyms"
+          },
+          {
+            "term": "Referencias Cruzadas de Molécula",
+            "definition": "Referencias a identificadores o entradas de la molécula en otras bases de datos externas.",
+            "parent_category": "Fármacos y Moléculas",
+            "labels": {
+              "domain": "data_integration",
+              "data_sensitivity": "public",
+              "data_type": "array<string>"
+            },
+            "overview": "Este campo contiene una colección de identificadores que enlazan la molécula farmacéutica con su representación en otras bases de datos o sistemas de información (ej. PubChem, DrugBank). Facilita la interoperabilidad y el enriquecimiento de datos desde fuentes externas.",
+            "related_terms": ["Identificador de Molécula Farmacéutica"],
+            "synonym_terms": ["Enlaces Externos", "IDs Externos"],
+            "contacts": ["Data Steward (Integración)", "Arquitecto de Datos"],
+            "related_technical_column": "crossReferences"
+          },
+          {
+            "term": "IDs ChEMBL de Derivados",
+            "definition": "Lista de identificadores de moléculas en la base de datos ChEMBL que son derivados o análogos químicos de la molécula principal.",
+            "parent_category": "Fármacos y Moléculas",
+            "labels": {
+              "domain": "química_farmacéutica",
+              "data_sensitivity": "public",
+              "data_type": "array<string>"
+            },
+            "overview": "Este campo proporciona una lista de identificadores únicos del conjunto de datos ChEMBL para moléculas que comparten una relación estructural o de origen con el fármaco actual. Es útil para la investigación de relaciones estructura-actividad y el descubrimiento de nuevos compuestos.",
+            "related_terms": ["ID de Molécula Padre", "Identificador de Molécula Farmacéutica"],
+            "synonym_terms": ["IDs de Análogos Químicos", "Relacionados Químicamente"],
+            "contacts": ["Data Steward (Química)", "Investigador de Descubrimiento de Fármacos"],
+            "related_technical_column": "childChemblIds"
+          },
+          {
+            "term": "Descripción General del Fármaco",
+            "definition": "Texto descriptivo que resume las características principales, el mecanismo de acción o el uso general de la molécula farmacéutica.",
+            "parent_category": "Fármacos y Moléculas",
+            "labels": {
+              "domain": "farmacología",
+              "data_sensitivity": "public",
+              "data_type": "string"
+            },
+            "overview": "Proporciona un resumen conciso de la molécula, incluyendo información sobre su clase, indicaciones principales, y cualquier otra característica relevante que no esté cubierta por campos específicos. Es una descripción de alto nivel para facilitar la comprensión del fármaco.",
+            "related_terms": ["Nombre de Fármaco", "Tipo de Fármaco"],
+            "synonym_terms": ["Resumen de Fármaco", "Información Clave del Medicamento"],
+            "contacts": ["Data Steward (Contenidos)", "Editor Médico"],
+            "related_technical_column": "description"
+          }
+        ]
+      },
+      {
+        "id": "indicaciones_terapeuticas",
+        "display_name": "Indicaciones Terapéuticas",
+        "description": "Información detallada sobre los usos previstos y aprobados de los fármacos.",
+        "overview": "Esta categoría se centra en el 'para qué' se utiliza un fármaco. Incluye tanto las indicaciones que están bajo investigación o se han sugerido (potenciales) como aquellas que han sido formalmente aprobadas por las autoridades reguladoras. Comprender estas indicaciones es fundamental para la prescripción, el desarrollo de medicamentos y la farmacovigilancia.",
+        "labels": {
+          "domain": "clínico",
+          "subdomain": "terapéutica",
+          "data_governance_level": "standard"
+        },
+        "terms": [
+          {
+            "term": "ID de Indicación de Fármaco",
+            "definition": "Identificador único de la molécula farmacéutica asociada a un conjunto de indicaciones.",
+            "parent_category": "Indicaciones Terapéuticas",
+            "labels": {
+              "domain": "farmacología",
+              "data_sensitivity": "public",
+              "data_type": "string"
+            },
+            "overview": "Este campo es un identificador que vincula las indicaciones listadas con una molécula farmacéutica específica. Generalmente, es el mismo 'Identificador de Molécula Farmacéutica' que permite agrupar todas las indicaciones pertinentes a un fármaco en particular.",
+            "related_terms": ["Identificador de Molécula Farmacéutica"],
+            "synonym_terms": ["ID de Fármaco para Indicación"],
+            "contacts": ["Data Steward (Clínico)", "Farmacólogo Clínico"],
+            "related_technical_column": "id"
+          },
+          {
+            "term": "Indicaciones Potenciales",
+            "definition": "Lista de condiciones médicas o enfermedades para las cuales el fármaco está siendo investigado o ha mostrado actividad, pero aún no tiene aprobación formal.",
+            "parent_category": "Indicaciones Terapéuticas",
+            "labels": {
+              "domain": "investigación_clínica",
+              "data_sensitivity": "public",
+              "data_type": "array<string>"
+            },
+            "overview": "Este campo contiene una colección de usos terapéuticos para los cuales un fármaco podría ser efectivo, basándose en la evidencia preclínica, los primeros ensayos clínicos o los usos off-label. No son indicaciones aprobadas por reguladores, pero representan áreas activas de investigación o uso médico no oficial. El tipo RECORD sugiere que esto podría ser una lista de indicaciones, posiblemente con detalles adicionales.",
+            "related_terms": ["Indicaciones Aprobadas", "Enfermedades Vinculadas"],
+            "synonym_terms": ["Usos en Investigación", "Indicaciones en Desarrollo"],
+            "contacts": ["Data Steward (Investigación)", "Jefe de I+D"],
+            "related_technical_column": "indications"
+          },
+          {
+            "term": "Indicaciones Aprobadas",
+            "definition": "Lista de las condiciones médicas o enfermedades específicas para las cuales el fármaco ha recibido aprobación regulatoria para su uso.",
+            "parent_category": "Indicaciones Terapéuticas",
+            "labels": {
+              "domain": "regulación_farmacéutica",
+              "data_sensitivity": "public",
+              "data_type": "array<string>"
+            },
+            "overview": "Este campo enumera los usos terapéuticos oficialmente reconocidos y aprobados por las agencias reguladoras (ej. FDA, EMA) para el fármaco. Estas son las únicas condiciones para las cuales el fármaco puede ser comercializado y recetado legalmente dentro de las directrices establecidas. El tipo RECORD sugiere que esto podría ser una lista de indicaciones, posiblemente con detalles adicionales.",
+            "related_terms": ["Indicaciones Potenciales", "Aprobación del Fármaco"],
+            "synonym_terms": ["Usos Aprobados", "Indicaciones Oficiales"],
+            "contacts": ["Data Steward (Regulatorio)", "Director Médico"],
+            "related_technical_column": "approvedIndications"
+          },
+          {
+            "term": "Conteo de Indicaciones",
+            "definition": "Número total de indicaciones (potenciales y/o aprobadas) asociadas a una molécula farmacéutica.",
+            "parent_category": "Indicaciones Terapéuticas",
+            "labels": {
+              "domain": "analítica_clínica",
+              "data_sensitivity": "public",
+              "data_type": "integer"
+            },
+            "overview": "Este campo proporciona una métrica cuantitativa sobre la diversidad de usos terapéuticos asociados a un fármaco. Puede incluir tanto las indicaciones en investigación como las ya aprobadas, ofreciendo una visión rápida de la amplitud de su aplicación potencial o real.",
+            "related_terms": ["Indicaciones Potenciales", "Indicaciones Aprobadas"],
+            "synonym_terms": ["Número de Usos"],
+            "contacts": ["Data Steward (Analítica)", "Analista de Negocio (Clínico)"],
+            "related_technical_column": "indicationCount"
+          }
+        ]
+      },
+      {
+        "id": "seguridad_advertencias_farmacologicas",
+        "display_name": "Seguridad y Advertencias Farmacológicas",
+        "description": "Información crítica sobre riesgos, efectos adversos y advertencias de seguridad de los fármacos.",
+        "overview": "Esta categoría recopila todos los datos relacionados con la seguridad de los medicamentos, incluyendo advertencias regulatorias, clases de toxicidad, descripciones de riesgos y referencias. Es esencial para la farmacovigilancia, la evaluación de riesgos y la toma de decisiones clínicas informadas, asegurando el uso seguro y efectivo de los fármacos.",
+        "labels": {
+          "domain": "farmacovigilancia",
+          "subdomain": "seguridad_del_paciente",
+          "data_governance_level": "restricted"
+        },
+        "terms": [
+          {
+            "term": "Identificador de Advertencia",
+            "definition": "Identificador único asignado a un registro específico de advertencia de seguridad de un fármaco.",
+            "parent_category": "Seguridad y Advertencias Farmacológicas",
+            "labels": {
+              "domain": "farmacovigilancia",
+              "data_sensitivity": "public",
+              "data_type": "integer"
+            },
+            "overview": "Este campo es un identificador numérico que distingue cada instancia de una advertencia específica. Permite el rastreo y la gestión individualizada de los avisos de seguridad asociados a los medicamentos.",
+            "related_terms": ["IDs ChEMBL Asociados"],
+            "synonym_terms": ["ID de Riesgo", "Código de Alerta"],
+            "contacts": ["Data Steward (Farmacovigilancia)", "Analista de Seguridad"],
+            "related_technical_column": "id"
+          },
+          {
+            "term": "IDs ChEMBL Asociados",
+            "definition": "Lista de identificadores de moléculas en la base de datos ChEMBL a las que se aplica esta advertencia de seguridad.",
+            "parent_category": "Seguridad y Advertencias Farmacológicas",
+            "labels": {
+              "domain": "farmacología",
+              "data_sensitivity": "public",
+              "data_type": "array<string>"
+            },
+            "overview": "Este campo contiene una colección de identificadores de ChEMBL que enlazan directamente una advertencia de seguridad con las moléculas farmacéuticas específicas a las que afecta. Es fundamental para la propagación de información de seguridad a través de los datos de los fármacos.",
+            "related_terms": ["Identificador de Molécula Farmacéutica", "Identificador de Advertencia"],
+            "synonym_terms": ["Fármacos con Advertencia", "Moléculas Afectadas"],
+            "contacts": ["Data Steward (Farmacovigilancia)", "Científico de Datos (Farmacia)"],
+            "related_technical_column": "chemblIds"
+          },
+          {
+            "term": "Clase de Toxicidad",
+            "definition": "Clasificación o categoría que describe el tipo o la gravedad de los efectos tóxicos potenciales de un fármaco.",
+            "parent_category": "Seguridad y Advertencias Farmacológicas",
+            "labels": {
+              "domain": "toxicología",
+              "data_sensitivity": "public",
+              "data_type": "string"
+            },
+            "overview": "Este campo categoriza los riesgos toxicológicos asociados con un medicamento, lo cual es crucial para la evaluación de seguridad. Las clasificaciones pueden variar según la fuente o el sistema de categorización, pero generalmente indican la naturaleza y el grado de peligro potencial para los pacientes.",
+            "related_terms": ["Descripción de Advertencia", "Advertencia de Recuadro Negro"],
+            "synonym_terms": ["Categoría de Riesgo", "Nivel de Toxicidad"],
+            "contacts": ["Data Steward (Toxicología)", "Toxicólogo Clínico"],
+            "related_technical_column": "toxicityClass"
+          },
+          {
+            "term": "País de Advertencia",
+            "definition": "El país o la jurisdicción reguladora donde se emitió la advertencia de seguridad.",
+            "parent_category": "Seguridad y Advertencias Farmacológicas",
+            "labels": {
+              "domain": "regulación_farmacéutica",
+              "data_sensitivity": "public",
+              "data_type": "string"
+            },
+            "overview": "Este campo especifica la región geográfica o la entidad reguladora responsable de la emisión de una advertencia de seguridad particular. Es importante para entender la aplicabilidad y el alcance geográfico de la advertencia, ya que las regulaciones pueden variar entre países.",
+            "related_terms": ["Tipo de Advertencia", "Año de Emisión de Advertencia"],
+            "synonym_terms": ["Jurisdicción de Advertencia", "Origen de la Alerta"],
+            "contacts": ["Data Steward (Regulatorio)", "Analista de Asuntos Regulatorios"],
+            "related_technical_column": "country"
+          },
+          {
+            "term": "Descripción de Advertencia",
+            "definition": "Texto detallado que explica la naturaleza y las implicaciones de la advertencia de seguridad de un fármaco.",
+            "parent_category": "Seguridad y Advertencias Farmacológicas",
+            "labels": {
+              "domain": "farmacovigilancia",
+              "data_sensitivity": "public",
+              "data_type": "string"
+            },
+            "overview": "Este campo proporciona el contenido explicativo completo de una advertencia de seguridad, detallando los riesgos específicos, las condiciones bajo las cuales ocurren y, a menudo, las recomendaciones para los profesionales de la salud o los pacientes. Es el cuerpo principal de la información de seguridad.",
+            "related_terms": ["Clase de Toxicidad", "Tipo de Advertencia"],
+            "synonym_terms": ["Contenido de Alerta de Seguridad", "Detalles de Riesgo"],
+            "contacts": ["Data Steward (Farmacovigilancia)", "Editor Médico"],
+            "related_technical_column": "description"
+          },
+          {
+            "term": "Referencias de Advertencia",
+            "definition": "Enlaces o citas a las fuentes bibliográficas o reguladoras que respaldan la emisión de una advertencia de seguridad.",
+            "parent_category": "Seguridad y Advertencias Farmacológicas",
+            "labels": {
+              "domain": "investigación",
+              "data_sensitivity": "public",
+              "data_type": "array<string>"
+            },
+            "overview": "Este campo contiene una colección de referencias que validan la información de la advertencia de seguridad. Pueden incluir publicaciones científicas, comunicados de agencias reguladoras o documentos internos que justifican la alerta. Es crucial para la trazabilidad y la credibilidad de la información de seguridad.",
+            "related_terms": ["Descripción de Advertencia"],
+            "synonym_terms": ["Fuentes de Alerta", "Evidencia de Seguridad"],
+            "contacts": ["Data Steward (Investigación)", "Bibliotecario Médico"],
+            "related_technical_column": "references"
+          },
+          {
+            "term": "Tipo de Advertencia",
+            "definition": "Clasificación de la advertencia de seguridad según su naturaleza o la entidad que la emitió (ej. regulatoria, del fabricante).",
+            "parent_category": "Seguridad y Advertencias Farmacológicas",
+            "labels": {
+              "domain": "regulación_farmacéutica",
+              "data_sensitivity": "public",
+              "data_type": "string"
+            },
+            "overview": "Este campo categoriza el tipo específico de advertencia de seguridad, ayudando a distinguir entre diferentes niveles de gravedad o la fuente de la información. Por ejemplo, puede diferenciar entre advertencias generales, avisos de agencias reguladoras o alertas internas de un fabricante.",
+            "related_terms": ["Descripción de Advertencia", "País de Advertencia"],
+            "synonym_terms": ["Categoría de Alerta", "Clase de Aviso"],
+            "contacts": ["Data Steward (Regulatorio)", "Gerente de Cumplimiento"],
+            "related_technical_column": "warningType"
+          },
+          {
+            "term": "Año de Emisión de Advertencia",
+            "definition": "El año en que se emitió o actualizó la advertencia de seguridad del fármaco.",
+            "parent_category": "Seguridad y Advertencias Farmacológicas",
+            "labels": {
+              "domain": "farmacovigilancia",
+              "data_sensitivity": "public",
+              "data_type": "integer"
+            },
+            "overview": "Este campo registra el año calendario en que una advertencia de seguridad fue publicada, revisada o actualizada. Es vital para el análisis de tendencias de seguridad y para asegurar que la información de seguridad utilizada sea la más reciente.",
+            "related_terms": ["Tipo de Advertencia", "País de Advertencia"],
+            "synonym_terms": ["Fecha de Alerta (Año)", "Año de Publicación de Advertencia"],
+            "contacts": ["Data Steward (Farmacovigilancia)", "Analista de Riesgos"],
+            "related_technical_column": "year"
+          }
+        ]
+      },
+      {
+        "id": "enfermedades_referencias_biologicas",
+        "display_name": "Enfermedades y Referencias Biológicas",
+        "description": "Información sobre las condiciones médicas, objetivos biológicos y su clasificación estandarizada en relación con los fármacos.",
+        "overview": "Esta categoría proporciona un marco para comprender las enfermedades que los fármacos buscan tratar y los mecanismos biológicos a los que se dirigen. Incluye la vinculación de fármacos a enfermedades específicas y a sus objetivos moleculares, utilizando sistemas de clasificación estandarizados como EFO, lo cual es crucial para la investigación, el desarrollo de terapias y la medicina de precisión.",
+        "labels": {
+          "domain": "biología_clínica",
+          "subdomain": "oncología_inmunología",
+          "data_governance_level": "standard"
+        },
+        "terms": [
+          {
+            "term": "Enfermedades Vinculadas",
+            "definition": "Lista de enfermedades o condiciones médicas que están asociadas con la molécula farmacéutica.",
+            "parent_category": "Enfermedades y Referencias Biológicas",
+            "labels": {
+              "domain": "clínico",
+              "data_sensitivity": "public",
+              "data_type": "array<string>"
+            },
+            "overview": "Este campo contiene una colección de nombres de enfermedades que han sido correlacionadas con la molécula farmacéutica, ya sea como indicaciones potenciales, indicaciones aprobadas, o en el contexto de investigación. Proporciona una visión de alto nivel de las áreas terapéuticas relevantes.",
+            "related_terms": ["Término EFO de Enfermedad", "Indicaciones Potenciales"],
+            "synonym_terms": ["Condiciones Médicas Relacionadas", "Patologías Asociadas"],
+            "contacts": ["Data Steward (Clínico)", "Epidemiólogo"],
+            "related_technical_column": "linkedDiseases"
+          },
+          {
+            "term": "Objetivos Biológicos Vinculados",
+            "definition": "Lista de las moléculas biológicas (ej. proteínas, genes) a las que el fármaco se dirige para ejercer su efecto terapéutico.",
+            "parent_category": "Enfermedades y Referencias Biológicas",
+            "labels": {
+              "domain": "biología_molecular",
+              "data_sensitivity": "public",
+              "data_type": "array<string>"
+            },
+            "overview": "Este campo enumera los objetivos moleculares específicos dentro del organismo (ej. receptores, enzimas) con los que interactúa un fármaco para lograr su acción farmacológica. Es fundamental para comprender el mecanismo de acción de los medicamentos y para el diseño de nuevas terapias.",
+            "related_terms": ["Enfermedades Vinculadas", "Mecanismo de Acción del Fármaco"],
+            "synonym_terms": ["Targets Terapéuticos", "Moléculas Diana"],
+            "contacts": ["Data Steward (Biología)", "Biólogo Molecular"],
+            "related_technical_column": "linkedTargets"
+          },
+          {
+            "term": "Término EFO de Enfermedad",
+            "definition": "Nombre del término de enfermedad estandarizado según la 'Experimental Factor Ontology' (EFO).",
+            "parent_category": "Enfermedades y Referencias Biológicas",
+            "labels": {
+              "domain": "ontología_clínica",
+              "data_sensitivity": "public",
+              "data_type": "string"
+            },
+            "overview": "El campo 'Término EFO' proporciona una descripción estandarizada y jerárquica de una enfermedad, utilizando la ontología EFO. Esto permite una clasificación consistente de las enfermedades y facilita la integración de datos de diferentes fuentes y análisis comparativos. A menudo se utiliza en el contexto de advertencias para clasificar la patología asociada.",
+            "related_terms": ["ID EFO de Enfermedad", "Enfermedades Vinculadas"],
+            "synonym_terms": ["Nombre de Enfermedad EFO", "Clasificación EFO"],
+            "contacts": ["Data Steward (Ontologías)", "Bioinformático Clínico"],
+            "related_technical_column": "efo_term"
+          },
+          {
+            "term": "ID EFO de Enfermedad",
+            "definition": "Identificador único para el término de enfermedad estandarizado en la 'Experimental Factor Ontology' (EFO).",
+            "parent_category": "Enfermedades y Referencias Biológicas",
+            "labels": {
+              "domain": "ontología_clínica",
+              "data_sensitivity": "public",
+              "data_type": "string"
+            },
+            "overview": "Este campo contiene el identificador alfanumérico único para un término de enfermedad dentro de la ontología EFO. Permite la identificación precisa y programática de las enfermedades, asegurando la coherencia y la capacidad de vinculación en bases de datos y sistemas de análisis. Es un componente clave para la interoperabilidad semántica en el ámbito de las enfermedades.",
+            "related_terms": ["Término EFO de Enfermedad", "ID EFO para Clase de Advertencia"],
+            "synonym_terms": ["Código EFO de Enfermedad"],
+            "contacts": ["Data Steward (Ontologías)", "Bioinformático Clínico"],
+            "related_technical_column": "efo_id"
+          },
+          {
+            "term": "ID EFO para Clase de Advertencia",
+            "definition": "Identificador EFO de la categoría de enfermedad o condición asociada a una clase de advertencia específica para un fármaco.",
+            "parent_category": "Enfermedades y Referencias Biológicas",
+            "labels": {
+              "domain": "ontología_clínica",
+              "data_sensitivity": "public",
+              "data_type": "string"
+            },
+            "overview": "Este identificador EFO se utiliza para categorizar la condición o enfermedad que es el foco de una advertencia particular. Ayuda a clasificar las advertencias de seguridad por la patología relevante, lo que es útil para la farmacovigilancia y el análisis de riesgos dirigidos a enfermedades específicas. Permite agrupar advertencias por el tipo de condición afectada.",
+            "related_terms": ["ID EFO de Enfermedad", "Clase de Toxicidad"],
+            "synonym_terms": ["EFO de Advertencia"],
+            "contacts": ["Data Steward (Ontologías)", "Farmacovigilancia (Soporte de Datos)"],
+            "related_technical_column": "efo_id_for_warning_class"
+          }
+        ]
+      }
+    ]
+  }
+}
