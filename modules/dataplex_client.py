@@ -126,8 +126,22 @@ class DataplexGlossaryClient:
                 category_id=category_id
             )
             print(f"Category '{display_name}' created.")
-        except AlreadyExists:
-            print(f"Category '{display_name}' already exists. Skipping.")
+        except Exception as e:
+            if "already exists" in str(e).lower() or isinstance(e, AlreadyExists):
+                print(f"Category '{display_name}' already exists. Updating...")
+                category.name = f"{glossary_name}/categories/{category_id}"
+                try:
+                    from google.protobuf import field_mask_pb2
+                    paths = ["display_name", "description"]
+                    if labels:
+                        paths.append("labels")
+                    update_mask = field_mask_pb2.FieldMask(paths=paths)
+                    self.client.update_glossary_category(category=category, update_mask=update_mask)
+                    print(f"Category '{display_name}' updated successfully.")
+                except Exception as update_err:
+                    print(f"Error updating category {category_id}: {update_err}")
+            else:
+                print(f"Error creating category {category_id}: {e}")
 
     def create_term(self, glossary_id: str, term_id: str, display_name: str, description: str, parent_category_id: str = None, is_category: bool = False, labels: dict = None):
         glossary_name = f"{self.parent}/glossaries/{glossary_id}"
@@ -167,19 +181,47 @@ class DataplexGlossaryClient:
                  term_id=term_id
              )
              print(f"Term '{display_name}' created under {parent_category_id if parent_category_id else 'Root'}.")
-        except AlreadyExists:
-            print(f"Term '{display_name}' already exists. Skipping.")
         except Exception as e:
-             # Fallback: if category parent fails due to stricter validation, try creating under glossary directly
-            print(f"Error creating term {term_id} under category: {e}. Trying root...")
-            try:
-                term.parent = glossary_name
-                self.client.create_glossary_term(
-                    parent=glossary_name, 
-                    term=term,
-                    term_id=term_id
-                )
-                print(f"Term '{display_name}' created under Root (Fallback).")
-            except Exception as e2:
-                print(f"Error creating term {term_id}: {e2}")
-                raise e2
+             if "already exists" in str(e).lower() or isinstance(e, AlreadyExists):
+                 print(f"Term '{display_name}' already exists. Updating...")
+                 term.name = f"{glossary_name}/terms/{term_id}"
+                 try:
+                     from google.protobuf import field_mask_pb2
+                     paths = ["display_name", "description"]
+                     if labels:
+                         paths.append("labels")
+                     update_mask = field_mask_pb2.FieldMask(paths=paths)
+                     self.client.update_glossary_term(term=term, update_mask=update_mask)
+                     print(f"Term '{display_name}' updated successfully.")
+                 except Exception as update_err:
+                     print(f"Error updating term {term_id}: {update_err}")
+                     raise update_err
+             else:
+                 # Fallback: if category parent fails due to stricter validation, try creating under glossary directly
+                 print(f"Error creating term {term_id} under category: {e}. Trying root...")
+                 try:
+                     term.parent = glossary_name
+                     self.client.create_glossary_term(
+                         parent=glossary_name, 
+                         term=term,
+                         term_id=term_id
+                     )
+                     print(f"Term '{display_name}' created under Root (Fallback).")
+                 except Exception as e2:
+                     if "already exists" in str(e2).lower() or isinstance(e2, AlreadyExists):
+                         print(f"Term '{display_name}' already exists in root. Updating...")
+                         term.name = f"{glossary_name}/terms/{term_id}"
+                         try:
+                             from google.protobuf import field_mask_pb2
+                             paths = ["display_name", "description"]
+                             if labels:
+                                 paths.append("labels")
+                             update_mask = field_mask_pb2.FieldMask(paths=paths)
+                             self.client.update_glossary_term(term=term, update_mask=update_mask)
+                             print(f"Term '{display_name}' updated successfully.")
+                         except Exception as update_err:
+                             print(f"Error updating term {term_id}: {update_err}")
+                             raise update_err
+                     else:
+                         print(f"Error creating term {term_id}: {e2}")
+                         raise e2

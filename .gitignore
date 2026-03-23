@@ -14,3 +14,13 @@ _book
 *.epub
 *.mobi
 *.pdf
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Local outputs
+output/
