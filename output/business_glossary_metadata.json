@@ -2,401 +2,816 @@
   "glossary": {
     "categories": [
       {
-        "id": "info_basica_farmacos",
-        "display_name": "Información Básica de Fármacos",
-        "description": "Conceptos fundamentales para la identificación y caracterización de compuestos farmacéuticos.",
-        "overview": "Esta categoría engloba los términos esenciales relacionados con la identificación única, la denominación, la descripción general y las propiedades químicas intrínsecas de los fármacos. Es fundamental para comprender la naturaleza de cada compuesto y sus características estructurales.",
+        "id": "gestion_stock_aprovisionamiento",
+        "display_name": "Gestión de Stock y Aprovisionamiento",
+        "description": "Conceptos clave relacionados con el inventario, los pedidos y la logística de suministro a las tiendas.",
+        "overview": "Esta categoría abarca todos los términos fundamentales asociados con la gestión de inventarios, la realización de pedidos para reabastecimiento, la optimización de los niveles de stock y la planificación logística para asegurar la disponibilidad de productos en la red de tiendas DIA. Incluye aspectos como los diferentes tipos de stock, los procesos de pedido, los factores que influyen en la cadena de suministro y la gestión de la caducidad.",
         "labels": {
-          "domain": "farmaceutica",
-          "subdomain": "identificacion",
-          "data_sensitivity": "public"
+          "domain": "Logística",
+          "subdomain": "Cadena de Suministro",
+          "source_system": "RELEX, DIA ERP",
+          "data_owner": "Supply Chain"
         },
         "terms": [
           {
-            "term": "Identificador de Fármaco",
-            "definition": "Un código único asignado a un compuesto farmacéutico para su identificación en bases de datos.",
-            "parent_category": "Información Básica de Fármacos",
+            "term": "Nivel de Inventario",
+            "definition": "Cantidad de productos mantenida en stock para satisfacer la demanda futura y las operaciones de la tienda.",
+            "parent_category": "Gestión de Stock y Aprovisionamiento",
             "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "identificacion",
-              "data_sensitivity": "public"
+              "domain": "Inventario",
+              "data_sensitivity": "Low",
+              "owner": "Logística"
             },
-            "overview": "El Identificador de Fármaco es un código alfanumérico estandarizado que permite rastrear y referenciar un compuesto específico a lo largo de su ciclo de vida, desde la investigación hasta la comercialización. Facilita la interoperabilidad entre diferentes sistemas y bases de datos.",
-            "related_terms": ["Código de Compuesto", "ID de Molécula"],
-            "synonym_terms": ["ID de Droga", "Identificador Químico"],
-            "contacts": ["Data Steward (Farmacología)", "Analista de Datos Maestro"],
-            "related_technical_column": "drug_molecule.id, drug_indication.id"
+            "overview": "El Nivel de Inventario es una métrica crítica que indica la cantidad de existencias de un producto específico en un punto de la cadena de suministro (tienda, almacén). Su gestión eficiente es clave para equilibrar la disponibilidad del producto con los costos de almacenamiento y las mermas. RELEX lo optimiza para cada producto-tienda.",
+            "related_terms": [
+              "Stock Disponible para la Venta",
+              "Stock de Seguridad",
+              "Merma de Productos"
+            ],
+            "synonym_terms": [
+              "Existencias",
+              "Inventario"
+            ],
+            "contacts": [
+              "Data Steward (Aprovisionamiento)",
+              "Jefe de Almacén",
+              "Analista de Stock"
+            ],
+            "related_technical_column": "stock_quantity"
           },
           {
-            "term": "Nombre Químico del Fármaco",
-            "definition": "La denominación común o de investigación de un compuesto farmacéutico.",
-            "parent_category": "Información Básica de Fármacos",
+            "term": "Stock Disponible para la Venta",
+            "definition": "Cantidad de un producto que está físicamente en la tienda y lista para ser vendida al cliente.",
+            "parent_category": "Gestión de Stock y Aprovisionamiento",
             "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "identificacion",
-              "data_sensitivity": "public"
+              "domain": "Inventario",
+              "data_sensitivity": "Low",
+              "source_system": "DIA ERP"
             },
-            "overview": "Este término se refiere al nombre principal por el que se conoce un fármaco durante su desarrollo y antes de recibir un nombre comercial. Puede ser el nombre genérico, el nombre de investigación o el nombre más utilizado en la literatura científica.",
-            "related_terms": ["Nombre Genérico", "Denominación Común Internacional (DCI)"],
-            "synonym_terms": ["Nombre del Compuesto", "Denominación del Principio Activo"],
-            "contacts": ["Data Steward (Farmacología)", "Equipo de Nomenclatura Química"],
-            "related_technical_column": "drug_molecule.name"
+            "overview": "Representa el stock real y utilizable para la venta al público. Es un factor crucial para el cálculo de reabastecimiento automático en RELEX, ya que solo el stock que puede ser vendido es considerado para la planificación de nuevos pedidos. Las tiendas realizan un recuento diario de este stock. No incluye productos en tránsito o no aptos para la venta.",
+            "related_terms": [
+              "Posición de Stock Físico",
+              "Recuento Diario del Stock",
+              "Venta"
+            ],
+            "synonym_terms": [
+              "Stock en Lineal",
+              "Inventario en Tienda"
+            ],
+            "contacts": [
+              "Data Steward (Aprovisionamiento)",
+              "Jefe de Tienda"
+            ],
+            "related_technical_column": "available_for_sale_stock_quantity"
           },
           {
-            "term": "Descripción del Fármaco",
-            "definition": "Texto descriptivo que proporciona información general sobre un compuesto farmacéutico.",
-            "parent_category": "Información Básica de Fármacos",
+            "term": "Órdenes de Compra Abiertas",
+            "definition": "Pedidos de productos que han sido emitidos pero aún no han sido recibidos por la tienda.",
+            "parent_category": "Gestión de Stock y Aprovisionamiento",
             "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "caracterizacion",
-              "data_sensitivity": "public"
+              "domain": "Compras",
+              "subdomain": "Aprovisionamiento",
+              "source_system": "DIA ERP"
             },
-            "overview": "Este campo contiene una descripción concisa pero informativa sobre las propiedades clave del fármaco, su clase terapéutica, mecanismo de acción o cualquier otra característica relevante que lo defina. Es útil para una comprensión rápida de la entidad.",
-            "related_terms": ["Perfil del Fármaco", "Resumen de Propiedades"],
-            "synonym_terms": ["Información General del Medicamento"],
-            "contacts": ["Data Steward (Farmacología)", "Editor de Contenido Científico"],
-            "related_technical_column": "drug_molecule.description"
+            "overview": "Estos pedidos son cruciales para la planificación futura de las necesidades de la tienda. RELEX los considera junto con el stock físico actual para proyectar la necesidad de productos y evitar desabastecimientos, integrándolos en sus proyecciones de stock.",
+            "related_terms": [
+              "Pedidos de Cliente Abiertos",
+              "Lead Time",
+              "Ciclo de Pedido"
+            ],
+            "synonym_terms": [
+              "Pedidos Pendientes",
+              "Backorders"
+            ],
+            "contacts": [
+              "Data Steward (Aprovisionamiento)",
+              "Jefe de Compras"
+            ],
+            "related_technical_column": "Open purchase orders"
           },
           {
-            "term": "Tipo de Molécula Farmacéutica",
-            "definition": "Clasificación de un fármaco basada en su estructura química o su naturaleza biológica.",
-            "parent_category": "Información Básica de Fármacos",
+            "term": "Lead Time",
+            "definition": "Período de tiempo que transcurre desde que se emite un pedido hasta que los productos son recibidos y están disponibles en la tienda.",
+            "parent_category": "Gestión de Stock y Aprovisionamiento",
             "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "quimica",
-              "data_sensitivity": "public"
+              "domain": "Logística",
+              "subdomain": "Transporte",
+              "source_system": "RELEX, DIA ERP"
             },
-            "overview": "Indica si el fármaco es una molécula pequeña, un anticuerpo monoclonal, una proteína recombinante, una vacuna, etc. Esta clasificación es fundamental para entender sus propiedades farmacocinéticas y farmacodinámicas.",
-            "related_terms": ["Clase Terapéutica", "Categoría Farmacológica"],
-            "synonym_terms": ["Clase de Fármaco", "Naturaleza del Compuesto"],
-            "contacts": ["Data Steward (Farmacología)", "Químico Medicinal Senior"],
-            "related_technical_column": "drug_molecule.drugType"
+            "overview": "Es un factor determinante en la planificación del reabastecimiento. Incluye el tiempo de suministro del proveedor y el tiempo de transporte hasta la tienda. Un lead time más largo implica la necesidad de mayores niveles de stock de seguridad para evitar roturas. RELEX lo utiliza para calcular la fecha de entrega del pedido.",
+            "related_terms": [
+              "Stock de Seguridad",
+              "Shelving Delay",
+              "Ciclo de Pedido",
+              "Plazo de Suministro"
+            ],
+            "synonym_terms": [
+              "Plazo de Entrega",
+              "Tiempo de Suministro"
+            ],
+            "contacts": [
+              "Data Steward (Aprovisionamiento)",
+              "Jefe de Logística"
+            ],
+            "related_technical_column": "lead_time"
           },
           {
-            "term": "Fórmula SMILES Canónica",
-            "definition": "Una cadena de texto que representa la estructura química de un fármaco de forma canónica y no ambigua.",
-            "parent_category": "Información Básica de Fármacos",
+            "term": "Shelving Delay",
+            "definition": "Tiempo que una tienda necesita para colocar el producto recibido en los estantes y hacerlo disponible para la venta.",
+            "parent_category": "Gestión de Stock y Aprovisionamiento",
             "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "quimica",
-              "data_sensitivity": "public"
+              "domain": "Operaciones",
+              "subdomain": "Tienda",
+              "source_system": "RELEX"
             },
-            "overview": "SMILES (Simplified Molecular Input Line Entry System) es una notación estándar utilizada en quimioinformática para describir la estructura de moléculas. La forma canónica asegura una representación única para cada molécula, facilitando la búsqueda y comparación.",
-            "related_terms": ["Estructura Química", "Notación de Estructura"],
-            "synonym_terms": ["SMILES", "Representación Molecular"],
-            "contacts": ["Data Steward (Quimioinformática)", "Químico Medicinal"],
-            "related_technical_column": "drug_molecule.canonicalSmiles"
+            "overview": "Este retraso afecta la fecha efectiva en que un producto puede ser vendido una vez llega a la tienda. Es considerado por RELEX para ajustar las propuestas de pedido, asegurando que la planificación anticipe este tiempo adicional y no se generen roturas de stock por productos en trastienda. No afecta al stock de seguridad, pero sí a la propuesta de pedido.",
+            "related_terms": [
+              "Lead Time",
+              "Stock Disponible para la Venta",
+              "Safety Lead-Time"
+            ],
+            "synonym_terms": [
+              "Retraso de Exhibición",
+              "Tiempo de Reposición en Lineal"
+            ],
+            "contacts": [
+              "Data Steward (Operaciones)",
+              "Jefe de Tienda"
+            ],
+            "related_technical_column": "shelving_delay"
           },
           {
-            "term": "Clave InChI",
-            "definition": "Un identificador químico estándar internacional para sustancias, derivado de la estructura molecular.",
-            "parent_category": "Información Básica de Fármacos",
+            "term": "Stock de Seguridad",
+            "definition": "Cantidad de inventario adicional que se mantiene para protegerse contra fluctuaciones inesperadas en la demanda o el tiempo de entrega.",
+            "parent_category": "Gestión de Stock y Aprovisionamiento",
             "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "quimica",
-              "data_sensitivity": "public"
+              "domain": "Inventario",
+              "subdomain": "Planificación",
+              "source_system": "RELEX"
             },
-            "overview": "La International Chemical Identifier (InChI) es una cadena de caracteres generada a partir de la estructura química de una molécula, diseñada para ser única, no propietaria y legible por ordenador, facilitando la búsqueda de información química en bases de datos.",
-            "related_terms": ["Identificador Químico Estándar", "Hash Químico"],
-            "synonym_terms": ["InChIKey"],
-            "contacts": ["Data Steward (Quimioinformática)", "Químico Analítico"],
-            "related_technical_column": "drug_molecule.inchiKey"
+            "overview": "RELEX calcula automáticamente el stock de seguridad necesario para cada producto-tienda, considerando la previsión, los parámetros logísticos y el nivel de servicio objetivo. Es clave para reaccionar a variaciones inesperadas de ventas y asegurar la disponibilidad, especialmente para productos perecederos donde se busca un equilibrio entre disponibilidad y reducción de mermas.",
+            "related_terms": [
+              "Nivel de Servicio",
+              "Lead Time",
+              "Optimización de Productos Frescos"
+            ],
+            "synonym_terms": [
+              "Colchón de Inventario",
+              "Stock Buffer"
+            ],
+            "contacts": [
+              "Data Steward (Aprovisionamiento)",
+              "Analista de Stock"
+            ],
+            "related_technical_column": "safety_stock_level"
           },
           {
-            "term": "Nombres Comerciales del Fármaco",
-            "definition": "Nombres de marca o propietarios bajo los cuales un fármaco es comercializado.",
-            "parent_category": "Información Básica de Fármacos",
+            "term": "Merma de Productos",
+            "definition": "Pérdida de productos debido a caducidad, deterioro, daño o robo, que los hace no aptos para la venta.",
+            "parent_category": "Gestión de Stock y Aprovisionamiento",
             "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "comercial",
-              "data_sensitivity": "public"
+              "domain": "Operaciones",
+              "subdomain": "Pérdidas",
+              "source_system": "DIA ERP, RELEX"
             },
-            "overview": "Estos son los nombres registrados y protegidos por derechos de propiedad intelectual, bajo los cuales las compañías farmacéuticas venden sus productos. Un mismo fármaco genérico puede tener múltiples nombres comerciales en diferentes mercados.",
-            "related_terms": ["Marca Registrada", "Nombre de Marca"],
-            "synonym_terms": ["Nombres de Venta", "Marcas del Medicamento"],
-            "contacts": ["Data Steward (Marketing)", "Gerente de Producto"],
-            "related_technical_column": "drug_molecule.tradeNames"
+            "overview": "La gestión de mermas es un objetivo clave del proyecto. RELEX considera las mermas proyectadas y la vida útil restante de los productos, especialmente frescos y ultra-frescos, para optimizar las propuestas de pedido y el stock de seguridad, buscando minimizar estas pérdidas y mejorar la rentabilidad. Las mermas se utilizan en los cálculos del stock de seguridad.",
+            "related_terms": [
+              "Spoilage Time",
+              "Remaining Shelf Life",
+              "Optimización de Productos Frescos",
+              "Venta Markdown"
+            ],
+            "synonym_terms": [
+              "Deterioro de Inventario",
+              "Pérdida de Stock"
+            ],
+            "contacts": [
+              "Data Steward (Logística)",
+              "Jefe de Tienda",
+              "Responsable de Frescos"
+            ],
+            "related_technical_column": "spoilage_quantity"
           },
           {
-            "term": "Sinónimos de Fármaco",
-            "definition": "Otros nombres o denominaciones alternativas por las que un fármaco puede ser conocido.",
-            "parent_category": "Información Básica de Fármacos",
+            "term": "Spoilage Time",
+            "definition": "La vida útil de un producto, desde su llegada a la tienda hasta que ya no es aprovechable para la venta.",
+            "parent_category": "Gestión de Stock y Aprovisionamiento",
             "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "identificacion",
-              "data_sensitivity": "public"
+              "domain": "Producto",
+              "subdomain": "Calidad",
+              "source_system": "RELEX"
             },
-            "overview": "Este término abarca cualquier otro nombre, abreviatura, código o denominación histórica/regional asociada a un fármaco, aparte de su nombre químico principal o sus nombres comerciales. Es útil para la búsqueda y correlación de información entre fuentes diversas.",
-            "related_terms": ["Nombres Alternativos", "Abreviaturas del Fármaco"],
-            "synonym_terms": ["Alias del Fármaco", "Denominaciones Secundarias"],
-            "contacts": ["Data Steward (Farmacología)", "Documentalista Científico"],
-            "related_technical_column": "drug_molecule.synonyms"
+            "overview": "Es un concepto crucial para productos perecederos. Incluye el Remaining Shelf Life. RELEX considera que todo el stock que supere su spoilage time es un producto no aprovechable, llevando el stock a cero y teniendo en cuenta estas proyecciones para realizar propuestas de pedido al Centro de Distribución (DC) y asegurar la disponibilidad.",
+            "related_terms": [
+              "Remaining Shelf Life",
+              "Tipo de Caducidad",
+              "Caducidad Máxima"
+            ],
+            "synonym_terms": [
+              "Vida Útil Post-Entrega",
+              "Tiempo de Deterioro"
+            ],
+            "contacts": [
+              "Data Steward (Producto)",
+              "Responsable de Calidad"
+            ],
+            "related_technical_column": "spoilage_time"
           }
         ]
       },
       {
-        "id": "regulacion_uso_farmacos",
-        "display_name": "Regulación y Uso de Fármacos",
-        "description": "Términos relacionados con la aprobación regulatoria, el desarrollo clínico y las aplicaciones terapéuticas de los fármacos.",
-        "overview": "Esta categoría aborda el ciclo de vida regulatorio de los fármacos, desde su fase de desarrollo clínico hasta su aprobación y retiro del mercado. Incluye la información sobre las indicaciones terapéuticas para las que un fármaco ha sido autorizado y su uso potencial.",
+        "id": "pronostico_demanda",
+        "display_name": "Pronóstico y Demanda",
+        "description": "Conceptos relacionados con la predicción de ventas y la gestión de la demanda de productos.",
+        "overview": "Esta categoría agrupa todos los términos relacionados con la estimación de la demanda futura de productos, los métodos utilizados para calcular estas previsiones y las estrategias para corregir y optimizar los datos de venta históricos. Es fundamental para la toma de decisiones sobre aprovisionamiento, la gestión del ciclo de vida del producto y la planificación de campañas.",
         "labels": {
-          "domain": "farmaceutica",
-          "subdomain": "regulatorio",
-          "data_sensitivity": "public"
+          "domain": "Analítica",
+          "subdomain": "Forecasting",
+          "source_system": "RELEX"
         },
         "terms": [
           {
-            "term": "Año de Primera Aprobación",
-            "definition": "El año en que un fármaco recibió su primera aprobación regulatoria para su comercialización en cualquier país.",
-            "parent_category": "Regulación y Uso de Fármacos",
+            "term": "Previsión de la Demanda",
+            "definition": "Estimación de las ventas futuras de un producto en un período determinado.",
+            "parent_category": "Pronóstico y Demanda",
             "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "aprobacion",
-              "data_sensitivity": "public"
+              "domain": "Analítica",
+              "subdomain": "Forecasting",
+              "data_sensitivity": "Medium"
             },
-            "overview": "Indica el hito inicial de entrada al mercado global para un fármaco. Este dato es crucial para análisis de tendencias regulatorias, tiempo de desarrollo y estudios de mercado post-aprobación.",
-            "related_terms": ["Fecha de Aprobación Inicial", "Lanzamiento al Mercado"],
-            "synonym_terms": ["Año de Autorización"],
-            "contacts": ["Data Steward (Regulaciones)", "Director de Asuntos Regulatorios"],
-            "related_technical_column": "drug_molecule.yearOfFirstApproval"
+            "overview": "La previsión de la demanda es un proceso clave en RELEX, que calcula automáticamente las ventas esperadas a nivel de producto-ubicación para optimizar el reabastecimiento. Se extiende hasta 90 o 120 días y se calcula diariamente, basándose en la demanda unificada y considerando patrones históricos y correcciones automáticas.",
+            "related_terms": [
+              "Venta",
+              "Corrección Automática de la Demanda",
+              "Patrones de Demanda",
+              "Uplift Promocional"
+            ],
+            "synonym_terms": [
+              "Pronóstico de Ventas",
+              "Demanda Prevista"
+            ],
+            "contacts": [
+              "Data Steward (Pronóstico)",
+              "Analista de Demanda"
+            ],
+            "related_technical_column": "forecast_quantity"
           },
           {
-            "term": "Fase Máxima de Ensayo Clínico",
-            "definition": "La fase más avanzada de ensayos clínicos alcanzada por un fármaco en desarrollo.",
-            "parent_category": "Regulación y Uso de Fármacos",
+            "term": "Corrección Automática de la Demanda",
+            "definition": "Proceso automatizado en RELEX para ajustar los datos de venta históricos, eliminando anomalías o picos excepcionales.",
+            "parent_category": "Pronóstico y Demanda",
             "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "investigacion",
-              "data_sensitivity": "internal"
+              "domain": "Analítica",
+              "subdomain": "Calidad de Datos",
+              "source_system": "RELEX"
             },
-            "overview": "Los ensayos clínicos se dividen en fases (I, II, III, IV). Este término indica la fase más alta que un fármaco ha alcanzado, reflejando su progreso en el desarrollo pre-comercial. Es un indicador clave de madurez en el pipeline de desarrollo.",
-            "related_terms": ["Estadio de Desarrollo", "Fase Clínica"],
-            "synonym_terms": ["Mayor Fase de Ensayo"],
-            "contacts": ["Data Steward (I+D)", "Director de Ensayos Clínicos"],
-            "related_technical_column": "drug_molecule.maximumClinicalTrialPhase"
+            "overview": "Esta funcionalidad mejora la precisión de los modelos de previsión al filtrar datos que podrían distorsionar los cálculos, como ventas promocionales, roturas de stock o picos de demanda inusuales (ej. ventas B2B grandes). Incluye la corrección de campañas, roturas de stock y outliers.",
+            "related_terms": [
+              "Picos de Demanda Excepcionales",
+              "Roturas de Stock",
+              "Uplift Promocional",
+              "Venta Markdown"
+            ],
+            "synonym_terms": [
+              "Limpieza de Datos de Venta",
+              "Ajuste de Demanda Histórica"
+            ],
+            "contacts": [
+              "Data Steward (Pronóstico)",
+              "Científico de Datos"
+            ],
+            "related_technical_column": "outlier_sales_correction"
           },
           {
-            "term": "Estado de Aprobación de Comercialización",
-            "definition": "Indica si un fármaco está actualmente aprobado para su uso y comercialización por las autoridades regulatorias.",
-            "parent_category": "Regulación y Uso de Fármacos",
+            "term": "Patrones de Demanda",
+            "definition": "Comportamiento histórico de las ventas de un producto, que puede ser estable, con tendencia, estacional o intermitente.",
+            "parent_category": "Pronóstico y Demanda",
             "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "aprobacion",
-              "data_sensitivity": "public"
+              "domain": "Analítica",
+              "subdomain": "Modelado",
+              "source_system": "RELEX"
             },
-            "overview": "Este indicador booleano es fundamental para saber si un fármaco puede ser prescrito y vendido legalmente. Un estado 'Aprobado' significa que ha pasado las evaluaciones de seguridad y eficacia requeridas.",
-            "related_terms": ["Aprobado para Venta", "Autorización de Mercado"],
-            "synonym_terms": ["Estatus Aprobatorio", "Comercialización Vigente"],
-            "contacts": ["Data Steward (Regulaciones)", "Oficial de Cumplimiento Regulatorio"],
-            "related_technical_column": "drug_molecule.isApproved"
+            "overview": "RELEX analiza automáticamente estos patrones para seleccionar el modelo de previsión que mejor se ajusta al comportamiento del artículo-tienda semanalmente. Entender estos patrones es crucial para generar predicciones precisas y optimizar los niveles de stock.",
+            "related_terms": [
+              "Previsión de la Demanda",
+              "Modelos de Previsión"
+            ],
+            "synonym_terms": [
+              "Comportamiento de Ventas",
+              "Ciclo de Demanda"
+            ],
+            "contacts": [
+              "Data Steward (Pronóstico)",
+              "Analista de Demanda"
+            ],
+            "related_technical_column": "demand_pattern_type"
           },
           {
-            "term": "Estado de Retiro del Mercado",
-            "definition": "Indica si un fármaco ha sido retirado del mercado por razones de seguridad, eficacia o comerciales.",
-            "parent_category": "Regulación y Uso de Fármacos",
+            "term": "Venta",
+            "definition": "Cantidad de un producto que ha sido comercializado y registrado, incluyendo ventas online y en punto de venta.",
+            "parent_category": "Pronóstico y Demanda",
             "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "seguridad",
-              "data_sensitivity": "public"
+              "domain": "Comercial",
+              "subdomain": "Transacciones",
+              "data_sensitivity": "Low",
+              "source_system": "DIA ERP"
             },
-            "overview": "Este indicador booleano señala si un fármaco ya no está disponible para su venta o prescripción. Un retiro puede ser voluntario por el fabricante o mandatorio por las autoridades regulatorias, a menudo debido a nuevos hallazgos de seguridad.",
-            "related_terms": ["Retirado de Venta", "Descontinuado"],
-            "synonym_terms": ["Fuera del Mercado"],
-            "contacts": ["Data Steward (Farmacovigilancia)", "Director de Calidad"],
-            "related_technical_column": "drug_molecule.hasBeenWithdrawn"
-          },
-          {
-            "term": "Indicaciones Terapéuticas",
-            "definition": "Las condiciones médicas o enfermedades para las cuales se ha identificado que un fármaco puede ser eficaz.",
-            "parent_category": "Regulación y Uso de Fármacos",
-            "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "terapeutica",
-              "data_sensitivity": "public"
-            },
-            "overview": "Este término se refiere al listado de usos potenciales para los que un fármaco ha mostrado actividad en estudios preclínicos o clínicos, o para los que está en investigación, pero que aún no han sido formalmente aprobados por las agencias reguladoras.",
-            "related_terms": ["Usos Potenciales", "Aplicaciones Clínicas"],
-            "synonym_terms": ["Diagnósticos Tratados", "Espectro de Acción"],
-            "contacts": ["Data Steward (Clínico)", "Médico Investigador"],
-            "related_technical_column": "drug_indication.indications"
-          },
-          {
-            "term": "Indicaciones Aprobadas",
-            "definition": "Las condiciones médicas o enfermedades para las cuales un fármaco ha sido oficialmente aprobado por las autoridades regulatorias.",
-            "parent_category": "Regulación y Uso de Fármacos",
-            "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "aprobacion",
-              "data_sensitivity": "public"
-            },
-            "overview": "Estas son las indicaciones específicas para las cuales un fármaco ha demostrado ser seguro y eficaz en ensayos clínicos y ha recibido la autorización de comercialización por parte de las agencias reguladoras (ej. FDA, EMA). Son los usos oficiales del medicamento.",
-            "related_terms": ["Usos Autorizados", "Indicaciones Registradas"],
-            "synonym_terms": ["Usos Permitidos", "Indicaciones Legales"],
-            "contacts": ["Data Steward (Regulaciones)", "Director Médico"],
-            "related_technical_column": "drug_indication.approvedIndications"
-          },
-          {
-            "term": "Conteo de Indicaciones",
-            "definition": "El número total de indicaciones terapéuticas asociadas a un fármaco, tanto aprobadas como en investigación.",
-            "parent_category": "Regulación y Uso de Fármacos",
-            "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "terapeutica",
-              "data_sensitivity": "public"
-            },
-            "overview": "Este contador proporciona una medida de la versatilidad o amplitud de uso de un fármaco. Incluye todas las condiciones para las que hay evidencia o se está explorando su eficacia, ofreciendo una vista consolidada de su potencial terapéutico.",
-            "related_terms": ["Número de Usos", "Recuento de Indicaciones"],
-            "synonym_terms": ["Total de Indicaciones"],
-            "contacts": ["Data Steward (Clínico)", "Analista de Portafolio"],
-            "related_technical_column": "drug_indication.indicationCount"
-          },
-          {
-            "term": "Enfermedades Asociadas",
-            "definition": "Listado de enfermedades o condiciones con las que un fármaco tiene alguna conexión, ya sea como tratamiento o en investigación.",
-            "parent_category": "Regulación y Uso de Fármacos",
-            "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "terapeutica",
-              "data_sensitivity": "public"
-            },
-            "overview": "Se refiere a la recopilación de todas las enfermedades y trastornos para los cuales se ha documentado un vínculo con el fármaco, incluyendo las que son indicaciones aprobadas, en fase de ensayo, o que se han estudiado por otras razones (ej. mecanismos biológicos compartidos).",
-            "related_terms": ["Patologías Relacionadas", "Condiciones Tratables"],
-            "synonym_terms": ["Enfermedades Objetivo"],
-            "contacts": ["Data Steward (Clínico)", "Especialista en Terminología Médica"],
-            "related_technical_column": "drug_molecule.linkedDiseases"
+            "overview": "Las ventas se importan diariamente a RELEX y son la base principal para el cálculo de la previsión de la demanda. Incluye ventas de tiendas físicas y darkstores, y puede tipificarse por 'Order Type' (físicas, online, escalón). Se excluyen transferencias, reservas, consumos internos y devoluciones a DC para la previsión.",
+            "related_terms": [
+              "Previsión de la Demanda",
+              "Venta Markdown",
+              "Order Type"
+            ],
+            "synonym_terms": [
+              "Ventas Realizadas",
+              "Transacciones de Venta"
+            ],
+            "contacts": [
+              "Data Steward (Comercial)",
+              "Jefe de Datos de Venta"
+            ],
+            "related_technical_column": "sales_quantity"
           }
         ]
       },
       {
-        "id": "seguridad_farmacovigilancia",
-        "display_name": "Seguridad y Farmacovigilancia",
-        "description": "Términos relacionados con la seguridad de los fármacos, advertencias, toxicidad y monitoreo post-comercialización.",
-        "overview": "Esta categoría se centra en los aspectos de seguridad de los fármacos, incluyendo advertencias importantes, clasificación de toxicidad y el proceso de farmacovigilancia. Es vital para garantizar el uso seguro de los medicamentos y la protección del paciente.",
+        "id": "gestion_producto_surtido",
+        "display_name": "Gestión de Producto y Surtido",
+        "description": "Atributos, clasificación y ciclo de vida de los productos en el catálogo de DIA.",
+        "overview": "Esta categoría define los términos relacionados con la descripción, clasificación y gestión a lo largo de su ciclo de vida de los productos que DIA comercializa. Incluye desde la identificación básica del producto, su jerarquía y atributos, hasta los procesos de alta, baja y las relaciones con otros productos en el surtido.",
         "labels": {
-          "domain": "farmaceutica",
-          "subdomain": "seguridad",
-          "data_sensitivity": "public"
+          "domain": "Maestros",
+          "subdomain": "Producto",
+          "source_system": "DIA ERP, RELEX"
         },
         "terms": [
           {
-            "term": "Advertencia de Caja Negra",
-            "definition": "Una advertencia regulatoria crítica que destaca riesgos graves o potencialmente mortales asociados con el uso de un fármaco.",
-            "parent_category": "Seguridad y Farmacovigilancia",
+            "term": "Producto en Surtido DIA",
+            "definition": "Un producto que está activado y disponible para la comercialización en la red de tiendas de DIA.",
+            "parent_category": "Gestión de Producto y Surtido",
             "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "seguridad",
-              "data_sensitivity": "public"
+              "domain": "Maestros",
+              "subdomain": "Surtido",
+              "data_owner": "Comercial"
             },
-            "overview": "Es el tipo de advertencia más severo emitido por las agencias reguladoras (como la FDA en EE. UU.) y se coloca en un recuadro destacado en el prospecto del medicamento. Informa sobre efectos adversos graves, contraindicaciones o precauciones especiales.",
-            "related_terms": ["Black Box Warning (BBW)", "Advertencia de Mayor Riesgo"],
-            "synonym_terms": ["Alerta de Seguridad Crítica"],
-            "contacts": ["Data Steward (Farmacovigilancia)", "Director de Seguridad del Paciente"],
-            "related_technical_column": "drug_molecule.blackBoxWarning"
+            "overview": "Este flag ('custom_in_assortment_DIA') indica si un producto forma parte del catálogo activo de DIA. Es un criterio fundamental para determinar si se debe calcular una previsión de demanda y una propuesta de pedido para dicho producto. Se diferencia del flag 'custom_in_assortment', que indica si está 'a pedir'.",
+            "related_terms": [
+              "Producto en Surtido RELEX",
+              "Jerarquía de Producto",
+              "Referencias Activas"
+            ],
+            "synonym_terms": [
+              "Artículo Activo DIA",
+              "Producto de Catálogo DIA"
+            ],
+            "contacts": [
+              "Data Steward (Producto)",
+              "Jefe Comercial"
+            ],
+            "related_technical_column": "custom_in_assortment_DIA"
           },
           {
-            "term": "Descripción de Advertencia de Seguridad",
-            "definition": "Texto detallado que explica la naturaleza y las implicaciones de una advertencia de seguridad específica para un fármaco.",
-            "parent_category": "Seguridad y Farmacovigilancia",
+            "term": "Producto en Surtido RELEX",
+            "definition": "Un producto que está activo en RELEX para el cálculo de propuestas de compra, considerando su estado de alta en surtido, alta de pedido y no exclusión de APT2.",
+            "parent_category": "Gestión de Producto y Surtido",
             "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "seguridad",
-              "data_sensitivity": "public"
+              "domain": "Maestros",
+              "subdomain": "Surtido",
+              "data_owner": "Supply Chain"
             },
-            "overview": "Este campo contiene la explicación completa de un riesgo identificado, incluyendo los síntomas, las poblaciones afectadas, la severidad y las recomendaciones para su manejo. Es esencial para la correcta comunicación de riesgos a profesionales de la salud y pacientes.",
-            "related_terms": ["Detalle de Alerta", "Comunicado de Riesgo"],
-            "synonym_terms": ["Texto de Precaución"],
-            "contacts": ["Data Steward (Farmacovigilancia)", "Especialista en Comunicación Médica"],
-            "related_technical_column": "drug_warning.description"
+            "overview": "Este flag ('custom assortment active') en RELEX indica si un producto debe ser considerado para el cálculo de propuestas de pedido. Un artículo no se pedirá si no está en surtido, no es alta pedido, o está excluido de APT2. Para el cálculo de la previsión, solo se requiere que esté 'en surtido para DIA'.",
+            "related_terms": [
+              "Producto en Surtido DIA",
+              "custom_in_assortment",
+              "custom_excluded_apt2"
+            ],
+            "synonym_terms": [
+              "Artículo Activo RELEX",
+              "Producto Pedible"
+            ],
+            "contacts": [
+              "Data Steward (Aprovisionamiento)",
+              "Analista de Surtido"
+            ],
+            "related_technical_column": "custom assortment active"
           },
           {
-            "term": "Tipo de Advertencia de Seguridad",
-            "definition": "Clasificación de la naturaleza de la advertencia de seguridad (ej., efecto adverso, contraindicación, precaución).",
-            "parent_category": "Seguridad y Farmacovigilancia",
+            "term": "Tipo de Caducidad",
+            "definition": "Clasificación de un producto según su período de vida útil, distinguiendo entre no caduca, ultra-fresco, fresco y normal.",
+            "parent_category": "Gestión de Producto y Surtido",
             "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "seguridad",
-              "data_sensitivity": "public"
+              "domain": "Logística",
+              "subdomain": "Frescos",
+              "source_system": "RELEX"
             },
-            "overview": "Especifica el tipo particular de riesgo o precaución que se está comunicando, lo que ayuda a categorizar y analizar las alertas de seguridad de manera sistemática. Ejemplos incluyen 'reacción adversa grave', 'interacción farmacológica' o 'contraindicación en embarazo'.",
-            "related_terms": ["Categoría de Riesgo", "Clase de Alerta"],
-            "synonym_terms": ["Motivo de Advertencia"],
-            "contacts": ["Data Steward (Farmacovigilancia)", "Médico de Seguridad"],
-            "related_technical_column": "drug_warning.warningType"
+            "overview": "Esta clasificación automática en RELEX ('spoilage_type' o 'custom_spoilage_type') es vital para aplicar modelos de optimización de stock de seguridad específicos para productos perecederos, minimizando mermas y maximizando la disponibilidad. Ultra-fresco (caducidad <= 3 días), Fresco (caducidad > 3 y <= 10 días), Normal (resto de productos).",
+            "related_terms": [
+              "Productos Frescos",
+              "Ultra-frescos",
+              "Merma de Productos",
+              "Spoilage Time"
+            ],
+            "synonym_terms": [
+              "Clasificación de Perecederos",
+              "Categoría de Deterioro"
+            ],
+            "contacts": [
+              "Data Steward (Producto)",
+              "Responsable de Frescos"
+            ],
+            "related_technical_column": "custom_spoilage_type"
           },
           {
-            "term": "Clasificación de Toxicidad",
-            "definition": "Categorización del nivel de toxicidad o el tipo de efecto adverso que un fármaco puede producir.",
-            "parent_category": "Seguridad y Farmacovigilancia",
+            "term": "Jerarquía de Producto",
+            "definition": "Estructura de organización de los productos en niveles como sección, familia y subfamilia.",
+            "parent_category": "Gestión de Producto y Surtido",
             "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "seguridad",
-              "data_sensitivity": "public"
+              "domain": "Maestros",
+              "subdomain": "Clasificación",
+              "data_owner": "Comercial"
             },
-            "overview": "Define el grado de peligro asociado a un fármaco basándose en sus efectos nocivos. Puede clasificarse por órgano afectado (ej. hepatotoxicidad, nefrotoxicidad), por mecanismo o por gravedad. Es crucial para evaluar el perfil de seguridad general.",
-            "related_terms": ["Nivel de Riesgo", "Clase de Efecto Adverso"],
-            "synonym_terms": ["Categoría de Peligro", "Perfil Toxicológico"],
-            "contacts": ["Data Steward (Toxicología)", "Farmacólogo Clínico"],
-            "related_technical_column": "drug_warning.toxicityClass"
+            "overview": "Permite agrupar productos con características similares para facilitar el análisis, la gestión de surtidos y la aplicación de reglas de negocio. Los niveles principales son Sección (PG1), Familia (PG2) y Subfamilia (PG3), utilizados en RELEX para agrupaciones y análisis jerárquicos.",
+            "related_terms": [
+              "Sección (PG1)",
+              "Familia (PG2)",
+              "Subfamilia (PG3)"
+            ],
+            "synonym_terms": [
+              "Clasificación de Artículos",
+              "Categorización de Productos"
+            ],
+            "contacts": [
+              "Data Steward (Producto)",
+              "Jefe Comercial"
+            ],
+            "related_technical_column": "PG1, PG2, PG3"
           },
           {
-            "term": "País de Emisión de Advertencia",
-            "definition": "El país o jurisdicción en el que se emitió una advertencia de seguridad sobre un fármaco.",
-            "parent_category": "Seguridad y Farmacovigilancia",
+            "term": "Introducción de Producto Nuevo",
+            "definition": "Proceso de incorporar un nuevo producto al surtido activo de las tiendas.",
+            "parent_category": "Gestión de Producto y Surtido",
             "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "regulacion",
-              "data_sensitivity": "public"
+              "domain": "Maestros",
+              "subdomain": "Ciclo de Vida",
+              "data_owner": "Comercial"
             },
-            "overview": "Indica el ámbito geográfico de aplicación de una advertencia específica, ya que las regulaciones y las autoridades de farmacovigilancia pueden variar entre países. Es importante para entender la relevancia y el alcance de la alerta.",
-            "related_terms": ["Jurisdicción de Alerta", "Origen de la Advertencia"],
-            "synonym_terms": ["Región de Advertencia"],
-            "contacts": ["Data Steward (Regulaciones Globales)", "Especialista en Farmacovigilancia Regional"],
-            "related_technical_column": "drug_warning.country"
+            "overview": "RELEX requiere una 'Fecha de Introducción' para calcular pronósticos y hacer propuestas de pedido. Esto se puede inicializar mediante reemplazos (heredando ventas de un producto antiguo) o mediante 'Autoreferencias' (usando un producto espejo con comportamiento similar) hasta que el nuevo producto genere suficiente histórico propio. La activación se realiza a nivel producto-tienda.",
+            "related_terms": [
+              "Fecha de Introducción",
+              "Reemplazo de Producto",
+              "Producto Espejo",
+              "Producto de Temporada"
+            ],
+            "synonym_terms": [
+              "Lanzamiento de Producto",
+              "Alta de Producto"
+            ],
+            "contacts": [
+              "Data Steward (Producto)",
+              "Jefe de Categoría"
+            ],
+            "related_technical_column": "introduction_date", "first_order_date"
           },
           {
-            "term": "Año de Emisión de Advertencia",
-            "definition": "El año en que una advertencia de seguridad específica fue emitida o actualizada.",
-            "parent_category": "Seguridad y Farmacovigilancia",
+            "term": "Terminación de Producto",
+            "definition": "Proceso de retirar un producto del surtido activo de las tiendas.",
+            "parent_category": "Gestión de Producto y Surtido",
             "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "seguridad",
-              "data_sensitivity": "public"
+              "domain": "Maestros",
+              "subdomain": "Ciclo de Vida",
+              "data_owner": "Comercial"
             },
-            "overview": "Registra la fecha de publicación de una advertencia de seguridad, lo que permite trazar la evolución del perfil de seguridad de un fármaco a lo largo del tiempo. Es fundamental para mantener la información de seguridad actualizada y cumplir con los requisitos regulatorios.",
-            "related_terms": ["Fecha de Publicación de Alerta", "Año de Revisión de Seguridad"],
-            "synonym_terms": ["Fecha de Alerta"],
-            "contacts": ["Data Steward (Farmacovigilancia)", "Oficial de Seguridad del Producto"],
-            "related_technical_column": "drug_warning.year"
+            "overview": "RELEX requiere una 'Fecha de Terminación' (último día de pedido) a partir de la cual no calculará pronósticos ni propuestas de pedido. El proceso se centra en reducir adecuadamente el stock existente para minimizar pérdidas y asegurar que no se pidan nuevos lotes. En DIA, la fecha de terminación suele estar ligada al agotamiento de stock en el DC.",
+            "related_terms": [
+              "Fecha de Terminación",
+              "Última Propuesta de Pedido",
+              "Merma de Productos"
+            ],
+            "synonym_terms": [
+              "Baja de Producto",
+              "Retirada de Producto"
+            ],
+            "contacts": [
+              "Data Steward (Producto)",
+              "Jefe de Categoría"
+            ],
+            "related_technical_column": "termination_date", "last_order_date"
+          }
+        ]
+      },
+      {
+        "id": "promociones_eventos",
+        "display_name": "Promociones y Eventos",
+        "description": "Definición, gestión y análisis de campañas comerciales y acontecimientos especiales que influyen en las ventas.",
+        "overview": "Esta categoría incluye todos los términos relacionados con las estrategias comerciales de impulso de ventas (promociones) y los acontecimientos externos que impactan la demanda de productos (eventos). Se enfoca en cómo RELEX integra y utiliza esta información para ajustar las previsiones, optimizar los pedidos y analizar el rendimiento de estas actividades.",
+        "labels": {
+          "domain": "Comercial",
+          "subdomain": "Marketing",
+          "source_system": "DIA ERP, RELEX"
+        },
+        "terms": [
+          {
+            "term": "Campaña Promocional",
+            "definition": "Actividad de marketing planificada para incentivar las ventas de uno o varios productos durante un período determinado.",
+            "parent_category": "Promociones y Eventos",
+            "labels": {
+              "domain": "Marketing",
+              "subdomain": "Promociones",
+              "data_sensitivity": "Medium"
+            },
+            "overview": "Las campañas son cruciales para el cálculo del incremento promocional (uplift) en RELEX, que compara las ventas durante la promoción con las ventas base. Se utilizan para corregir el histórico de ventas y prever el impacto de futuras promociones. Incluye atributos clave como categoría, tipo, subtipo y medio publicitario para una correcta clusterización y análisis de efectividad.",
+            "related_terms": [
+              "Uplift Promocional",
+              "Evento (Ventas)",
+              "Categorías Promocionales",
+              "Previsión Promocional"
+            ],
+            "synonym_terms": [
+              "Oferta Comercial",
+              "Actividad Promocional"
+            ],
+            "contacts": [
+              "Data Steward (Comercial)",
+              "Jefe de Marketing"
+            ],
+            "related_technical_column": "Campaign", "promotion_code", "promotion_start_date", "promotion_end_date"
           },
           {
-            "term": "Término de Ontología EFO",
-            "definition": "Un término estandarizado de la Experimental Factor Ontology (EFO) que describe un aspecto de un ensayo clínico o una condición médica relacionada con una advertencia.",
-            "parent_category": "Seguridad y Farmacovigilancia",
+            "term": "Uplift Promocional",
+            "definition": "Incremento en las ventas de un producto atribuible directamente a una campaña promocional.",
+            "parent_category": "Promociones y Eventos",
             "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "terminologia",
-              "data_sensitivity": "public"
+              "domain": "Marketing",
+              "subdomain": "Análisis",
+              "source_system": "RELEX"
             },
-            "overview": "EFO proporciona una terminología controlada para clasificar diversos factores experimentales, incluyendo enfermedades, fenotipos y tipos de muestras. Su uso estandariza la descripción de los datos asociados a las advertencias, facilitando la búsqueda y el análisis semántico.",
-            "related_terms": ["Ontología de Factores Experimentales", "Término Controlado"],
-            "synonym_terms": ["Concepto EFO"],
-            "contacts": ["Data Steward (Bioinformática)", "Especialista en Ontologías"],
-            "related_technical_column": "drug_warning.efo_term"
+            "overview": "Calculado automáticamente por RELEX, el uplift compara el aumento de las ventas durante el período promocional con las ventas promedio fuera de este período. Es fundamental para ajustar la previsión de demanda y planificar el aprovisionamiento de productos bajo promoción, basándose en la efectividad de campañas históricas similares.",
+            "related_terms": [
+              "Previsión Promocional",
+              "Campaña Promocional",
+              "Corrección Automática de la Demanda"
+            ],
+            "synonym_terms": [
+              "Incremento por Promoción",
+              "Impacto Promocional"
+            ],
+            "contacts": [
+              "Data Steward (Analítica)",
+              "Analista de Marketing"
+            ],
+            "related_technical_column": "promotional_uplift_factor"
           },
           {
-            "term": "Identificador de Ontología EFO",
-            "definition": "El código único de la Experimental Factor Ontology (EFO) que corresponde a un término específico.",
-            "parent_category": "Seguridad y Farmacovigilancia",
+            "term": "Evento (Ventas)",
+            "definition": "Acontecimiento regular o irregular, no promocional, que influye de manera especial en las ventas de productos (ej. Navidad, Pascua).",
+            "parent_category": "Promociones y Eventos",
             "labels": {
-              "domain": "farmaceutica",
-              "subdomain": "terminologia",
-              "data_sensitivity": "public"
+              "domain": "Comercial",
+              "subdomain": "Planificación",
+              "data_sensitivity": "Low"
             },
-            "overview": "Este identificador numérico o alfanumérico es la clave primaria para un concepto dentro de la ontología EFO. Permite la vinculación precisa y programática de las advertencias con definiciones estandarizadas de enfermedades, fenotipos o efectos adversos, mejorando la interoperabilidad.",
-            "related_terms": ["Código EFO", "ID de Concepto Ontológico"],
-            "synonym_terms": ["EFO ID"],
-            "contacts": ["Data Steward (Bioinformática)", "Arquitecto de Datos Científicos"],
-            "related_technical_column": "drug_warning.efo_id, drug_warning.efo_id_for_warning_class"
+            "overview": "A diferencia de las promociones, los eventos son factores externos que afectan la demanda. RELEX los utiliza para corregir las ventas históricas y mejorar la precisión de las previsiones, asegurando que el sistema de aprovisionamiento anticipe los picos o valles de demanda asociados a estas fechas. Su gestión se realiza a través de la interfaz de Campañas en RELEX.",
+            "related_terms": [
+              "Previsión de la Demanda",
+              "Corrección Automática de la Demanda",
+              "Campaña Promocional"
+            ],
+            "synonym_terms": [
+              "Acontecimiento de Ventas",
+              "Fecha Especial"
+            ],
+            "contacts": [
+              "Data Steward (Comercial)",
+              "Jefe de Planificación"
+            ],
+            "related_technical_column": "event_type", "event_start_date", "event_end_date"
+          },
+          {
+            "term": "Venta Markdown",
+            "definition": "Venta de productos con descuento debido a su proximidad a la fecha de caducidad, para reducir el stock y evitar mermas.",
+            "parent_category": "Promociones y Eventos",
+            "labels": {
+              "domain": "Comercial",
+              "subdomain": "Pérdidas",
+              "data_sensitivity": "Low"
+            },
+            "overview": "También conocida como 'escalón'. RELEX gestiona estas ventas para diferenciar la parte 'normal' de la venta de la parte excluida en los cálculos, evitando una retroalimentación positiva que genere envíos innecesarios. El objetivo es minimizar esta práctica mediante una optimización del stock de seguridad más precisa para productos perecederos.",
+            "related_terms": [
+              "Merma de Productos",
+              "Corrección Automática de la Demanda",
+              "Productos Perecederos"
+            ],
+            "synonym_terms": [
+              "Escalón de Precios",
+              "Venta por Caducidad"
+            ],
+            "contacts": [
+              "Data Steward (Comercial)",
+              "Analista de Pricing"
+            ],
+            "related_technical_column": "MARKDOWN_sales_quantity", "custom_markdown_days"
+          }
+        ]
+      },
+      {
+        "id": "operaciones_tienda",
+        "display_name": "Operaciones de Tienda",
+        "description": "Procesos y conceptos operativos específicos de las tiendas DIA y su interacción con el sistema de aprovisionamiento.",
+        "overview": "Esta categoría se centra en los términos que describen las actividades y características operativas a nivel de tienda, incluyendo la gestión de aperturas, cierres, el control de la capacidad del lineal, la estructura de los proveedores y la interacción con los sistemas de aprovisionamiento de RELEX.",
+        "labels": {
+          "domain": "Operaciones",
+          "subdomain": "Retail",
+          "source_system": "DIA ERP, RELEX"
+        },
+        "terms": [
+          {
+            "term": "Tienda Espejo",
+            "definition": "Tienda existente utilizada como modelo de referencia para inicializar la previsión y el surtido de una nueva tienda o una tienda recientemente reformada.",
+            "parent_category": "Operaciones de Tienda",
+            "labels": {
+              "domain": "Expansión",
+              "subdomain": "Planificación",
+              "data_sensitivity": "Low"
+            },
+            "overview": "En el proceso de apertura de nuevas tiendas, la tienda espejo hereda datos históricos de ventas de productos activos para la nueva ubicación. Esto permite a RELEX calcular un pronóstico inicial y generar propuestas de pedido antes de que la nueva tienda tenga su propio historial de ventas. Se utilizan atributos como centro regional, agrupación operacional y tipo de planograma para seleccionar la tienda espejo adecuada.",
+            "related_terms": [
+              "Apertura de Nuevas Tiendas",
+              "Previsión de la Demanda",
+              "Destercerización"
+            ],
+            "synonym_terms": [
+              "Tienda Referencia",
+              "Modelo de Tienda"
+            ],
+            "contacts": [
+              "Data Steward (Operaciones)",
+              "Jefe de Expansión"
+            ],
+            "related_technical_column": "mirror_store_id"
+          },
+          {
+            "term": "Cierre Temporal de Tienda",
+            "definition": "Período durante el cual una tienda no opera, no genera ventas ni requiere aprovisionamiento.",
+            "parent_category": "Operaciones de Tienda",
+            "labels": {
+              "domain": "Operaciones",
+              "subdomain": "Contingencia",
+              "data_sensitivity": "Low"
+            },
+            "overview": "RELEX puede gestionar estos cierres mediante campañas específicas. Durante este tiempo, no se calculan previsiones ni propuestas de pedido para los productos de la tienda afectada, evitando así el envío innecesario de mercancía. La información se gestiona a través de ficheros de actualización que definen el código de campaña, inicio y fin del cierre.",
+            "related_terms": [
+              "Apertura de Nuevas Tiendas",
+              "Cierre Temporal de Productos"
+            ],
+            "synonym_terms": [
+              "Clausura Temporal de Local",
+              "Inactividad de Tienda"
+            ],
+            "contacts": [
+              "Data Steward (Operaciones)",
+              "Jefe de Zona"
+            ],
+            "related_technical_column": "store_closed_status", "temporary_closure_campaign_id"
+          },
+          {
+            "term": "Almacén de Preparación",
+            "definition": "Almacén encargado de preparar los pedidos para un Product-Location (PL).",
+            "parent_category": "Operaciones de Tienda",
+            "labels": {
+              "domain": "Logística",
+              "subdomain": "Almacenamiento",
+              "source_system": "DIA ERP"
+            },
+            "overview": "En la estructura de proveedores de DIA, este tipo de almacén es la fuente de la que se extraen los datos logísticos como el formato de servicio y el tamaño del lote. Su código ('Supplier code') se utiliza para exportar la propuesta de pedido de RELEX.",
+            "related_terms": [
+              "Almacén de Reparto",
+              "Estructura de Proveedor",
+              "Supplier Code"
+            ],
+            "synonym_terms": [
+              "Centro de Preparación",
+              "DC de Preparación"
+            ],
+            "contacts": [
+              "Data Steward (Logística)",
+              "Responsable de Almacén"
+            ],
+            "related_technical_column": "Supplier code"
+          },
+          {
+            "term": "Almacén de Reparto",
+            "definition": "Almacén encargado de enviar la mercancía preparada a las tiendas.",
+            "parent_category": "Operaciones de Tienda",
+            "labels": {
+              "domain": "Logística",
+              "subdomain": "Distribución",
+              "source_system": "DIA ERP"
+            },
+            "overview": "Este almacén proporciona los datos de planificación, como los días de pedido y los lead-times. Aunque el 'Supplier code' en RELEX es el del almacén de preparación, se incorpora un campo custom para analizar al proveedor de reparto, lo que es útil para el análisis de rendimiento de la cadena de distribución.",
+            "related_terms": [
+              "Almacén de Preparación",
+              "Estructura de Proveedor",
+              "Proveedor de Reparto"
+            ],
+            "synonym_terms": [
+              "Centro de Distribución",
+              "DC de Reparto"
+            ],
+            "contacts": [
+              "Data Steward (Logística)",
+              "Responsable de Transporte"
+            ],
+            "related_technical_column": "custom_delivery_supplier_code"
+          }
+        ]
+      },
+      {
+        "id": "metricas_rendimiento",
+        "display_name": "Métricas y Rendimiento",
+        "description": "Indicadores clave de rendimiento para evaluar la eficiencia operativa y comercial en la cadena de suministro.",
+        "overview": "Esta categoría engloba los principales indicadores y ratios utilizados para monitorear y evaluar la eficacia de las operaciones de la cadena de suministro, la gestión de inventarios y la precisión de los pronósticos. Son herramientas esenciales para la toma de decisiones basada en datos y el seguimiento de los objetivos estratégicos del proyecto.",
+        "labels": {
+          "domain": "Analítica",
+          "subdomain": "KPIs",
+          "source_system": "RELEX, BI"
+        },
+        "terms": [
+          {
+            "term": "KPI (Key Performance Indicator)",
+            "definition": "Métrica cuantificable utilizada para evaluar el éxito de una organización, un proceso o un empleado en relación con un objetivo predefinido.",
+            "parent_category": "Métricas y Rendimiento",
+            "labels": {
+              "domain": "Gestión",
+              "subdomain": "Reporting",
+              "data_sensitivity": "Low"
+            },
+            "overview": "Los KPIs principales de este proyecto incluyen la mejora de la disponibilidad de producto en tiendas, la reducción del coste de inventario, la disminución de mermas y la reducción del tiempo dedicado a realizar pedidos. Se calculan diariamente a nivel de producto-tienda y son monitoreados regularmente para evaluar el impacto del software RELEX.",
+            "related_terms": [
+              "Disponibilidad de Producto",
+              "Costo de Inventario",
+              "Merma de Productos",
+              "Forecast Accuracy"
+            ],
+            "synonym_terms": [
+              "Indicador Clave de Rendimiento",
+              "Métrica de Éxito"
+            ],
+            "contacts": [
+              "Data Steward (Analítica)",
+              "Director de Operaciones",
+              "Responsable de BI"
+            ],
+            "related_technical_column": "kpi_name", "kpi_value"
+          },
+          {
+            "term": "Tasa de Aceptación de Propuestas",
+            "definition": "Porcentaje de propuestas de pedido generadas automáticamente por RELEX que son aceptadas sin modificaciones por las tiendas.",
+            "parent_category": "Métricas y Rendimiento",
+            "labels": {
+              "domain": "Operaciones",
+              "subdomain": "Eficiencia",
+              "source_system": "RELEX"
+            },
+            "overview": "Este KPI ('acceptance ratio') mide la adherencia de las tiendas a las recomendaciones de RELEX. Un alto porcentaje indica confianza en el sistema y eficiencia en el proceso de pedido. El seguimiento de las propuestas modificadas manualmente por tienda permite analizar las causas de desviaciones y mejorar la configuración de RELEX.",
+            "related_terms": [
+              "Propuesta de Pedido",
+              "Propuestas Modificadas por Tienda"
+            ],
+            "synonym_terms": [
+              "Ratio de Aceptación de Pedidos",
+              "Adherencia a Propuestas"
+            ],
+            "contacts": [
+              "Data Steward (Operaciones)",
+              "Jefe de Planificación"
+            ],
+            "related_technical_column": "acceptance_ratio"
+          },
+          {
+            "term": "Forecast Accuracy",
+            "definition": "Medida de la precisión con la que las previsiones de demanda de RELEX se corresponden con las ventas reales.",
+            "parent_category": "Métricas y Rendimiento",
+            "labels": {
+              "domain": "Analítica",
+              "subdomain": "Calidad de Datos",
+              "source_system": "RELEX"
+            },
+            "overview": "Este KPI es fundamental para evaluar la calidad de los modelos de previsión de RELEX. Se utilizan diferentes métricas para su cálculo (por ejemplo, error absoluto medio, MAPE). Su mejora impacta directamente en la optimización del stock y la reducción de mermas y roturas de stock. Las alertas de pronóstico ayudan a identificar áreas de baja precisión.",
+            "related_terms": [
+              "Previsión de la Demanda",
+              "Corrección Automática de la Demanda",
+              "KPI"
+            ],
+            "synonym_terms": [
+              "Precisión del Pronóstico",
+              "Exactitud de la Previsión"
+            ],
+            "contacts": [
+              "Data Steward (Analítica)",
+              "Científico de Datos",
+              "Analista de Demanda"
+            ],
+            "related_technical_column": "forecast_accuracy_metric"
           }
         ]
       }
