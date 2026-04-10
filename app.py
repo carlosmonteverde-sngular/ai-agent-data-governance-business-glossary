@@ -39,6 +39,7 @@ def run_agent():
     glossary_display_name = data.get("glossary_display_name", "Business Glossary")
     data_source = data.get("data_source", "bigquery")
     drive_folder_id = data.get("drive_folder_id", "")
+    publish_mode = data.get("publish_mode", "pull_request")
     
     def run_task():
         try:
@@ -49,7 +50,8 @@ def run_agent():
                 glossary_id=glossary_id,
                 glossary_display_name=glossary_display_name,
                 data_source=data_source,
-                drive_folder_id=drive_folder_id
+                drive_folder_id=drive_folder_id,
+                publish_mode=publish_mode
             )
             log_queue.put("DONE")
         except Exception as e:

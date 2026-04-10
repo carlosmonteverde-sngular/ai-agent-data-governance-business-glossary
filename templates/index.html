@@ -314,6 +314,14 @@
                 <input type="text" id="location" value="us">
             </div>
 
+            <div class="form-group">
+                <label>Modo de Despliegue (Publish Mode)</label>
+                <select id="publishMode" style="width: 100%; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text); padding: 1rem 1.2rem; border-radius: 12px; font-family: inherit; font-size: 1rem; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); appearance: none;">
+                    <option value="pull_request" style="background: var(--surface);">Crear Pull Request en GitHub</option>
+                    <option value="direct_dataplex" style="background: var(--surface);">Publicar en Dataplex Directamente (Peligro)</option>
+                </select>
+            </div>
+
             <!-- Spacer -->
             <div style="flex-grow: 1;"></div>
 
@@ -397,7 +405,8 @@
                 glossary_id: document.getElementById('glossaryId').value,
                 glossary_display_name: document.getElementById('glossaryDisplayName').value,
                 data_source: document.getElementById('dataSource').value,
-                drive_folder_id: document.getElementById('driveFolderId').value
+                drive_folder_id: document.getElementById('driveFolderId').value,
+                publish_mode: document.getElementById('publishMode').value
             };
 
             // Setup Server-Sent Events for Logs
