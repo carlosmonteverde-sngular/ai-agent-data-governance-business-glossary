@@ -283,8 +283,25 @@
             </div>
 
             <div class="form-group">
-                <label>BigQuery Metadata Dataset</label>
-                <input type="text" id="dataset" value="pharmaceutical_drugs">
+                <label>Data Source (Origen de Datos)</label>
+                <select id="dataSource" onchange="toggleDataSource()" style="width: 100%; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text); padding: 1rem 1.2rem; border-radius: 12px; font-family: inherit; font-size: 1rem; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); appearance: none;">
+                    <option value="bigquery" style="background: var(--surface);">BigQuery Metadata</option>
+                    <option value="google_drive" style="background: var(--surface);">Google Drive PDFs</option>
+                </select>
+            </div>
+
+            <div id="bqFields">
+                <div class="form-group">
+                    <label>BigQuery Metadata Dataset</label>
+                    <input type="text" id="dataset" value="pharmaceutical_drugs">
+                </div>
+            </div>
+
+            <div id="driveFields" style="display: none;">
+                <div class="form-group">
+                    <label>Google Drive Folder ID</label>
+                    <input type="text" id="driveFolderId" placeholder="Ej. 1A2bC3dE4fG5hI6jK7... (Carpeta con PDFs)">
+                </div>
             </div>
 
             <div class="form-group">
@@ -320,6 +337,17 @@
 
     <script>
         let eventSource = null;
+
+        function toggleDataSource() {
+            const dataSource = document.getElementById('dataSource').value;
+            if (dataSource === 'bigquery') {
+                document.getElementById('bqFields').style.display = 'block';
+                document.getElementById('driveFields').style.display = 'none';
+            } else {
+                document.getElementById('bqFields').style.display = 'none';
+                document.getElementById('driveFields').style.display = 'block';
+            }
+        }
 
         function scrollTerminalToBottom() {
             const terminal = document.getElementById('terminal');
@@ -367,7 +395,9 @@
                 location: document.getElementById('location').value,
                 target_dataset: document.getElementById('dataset').value,
                 glossary_id: document.getElementById('glossaryId').value,
-                glossary_display_name: document.getElementById('glossaryDisplayName').value
+                glossary_display_name: document.getElementById('glossaryDisplayName').value,
+                data_source: document.getElementById('dataSource').value,
+                drive_folder_id: document.getElementById('driveFolderId').value
             };
 
             // Setup Server-Sent Events for Logs

@@ -11,3 +11,6 @@ google-cloud-dataplex>=1.10.0
 # Siguiente iteración
 Flask>=3.0.0
 gunicorn>=21.2.0
+google-api-python-client>=2.0.0
+google-auth-oauthlib>=1.0.0
+pypdf>=3.17.0

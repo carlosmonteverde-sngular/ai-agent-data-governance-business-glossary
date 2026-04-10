@@ -37,6 +37,8 @@ def run_agent():
     target_dataset = data.get("target_dataset", "pharmaceutical_drugs")
     glossary_id = data.get("glossary_id", "business-glossary-v1")
     glossary_display_name = data.get("glossary_display_name", "Business Glossary")
+    data_source = data.get("data_source", "bigquery")
+    drive_folder_id = data.get("drive_folder_id", "")
     
     def run_task():
         try:
@@ -45,7 +47,9 @@ def run_agent():
                 location=location,
                 target_dataset=target_dataset,
                 glossary_id=glossary_id,
-                glossary_display_name=glossary_display_name
+                glossary_display_name=glossary_display_name,
+                data_source=data_source,
+                drive_folder_id=drive_folder_id
             )
             log_queue.put("DONE")
         except Exception as e:
