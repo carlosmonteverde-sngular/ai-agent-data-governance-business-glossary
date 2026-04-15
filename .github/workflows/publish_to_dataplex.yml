@@ -1,0 +1,50 @@
+name: Deploy Glossary to Dataplex
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  publish_glossary:
+    # Este trabajo solo se ejecuta si el Pull Request fue cerrado y 'merged' (fusionado)
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    
+    # PERMISOS OBLIGATORIOS PARA WORKLOAD IDENTITY FEDERATION
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          # Configuración segura: Workload Identity Federation (Sin Llaves)
+          workload_identity_provider: 'projects/TU_GCP_PROJECT_NUMBER/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider'
+          service_account: 'nombre-de-tu-sa@pg-gccoe-carlos-monteverde.iam.gserviceaccount.com'
+
+      - name: Publish Glossary to Dataplex
+        env:
+          # Puedes sobrescribir el Project ID aquí si es necesario, 
+          # o leerlo de Secrets si usas GCP_PROJECT_ID en GitHub Secrets
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID || 'pg-gccoe-carlos-monteverde' }}
+          GCP_LOCATION: 'us'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python scripts/publish_glossary.py
