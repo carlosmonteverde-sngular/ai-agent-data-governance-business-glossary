@@ -1,456 +1,284 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Business Glossary Agent</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --bg: #0f172a;
-            --surface: rgba(30, 41, 59, 0.75);
-            --surface-hover: rgba(51, 65, 85, 0.85);
-            --text: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent: #10b981;
-            --error: #ef4444;
-        }
-
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg);
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.2) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
-            color: var(--text);
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 1000px;
-            display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            gap: 2rem;
-            padding: 2rem;
-        }
-
-        .glass-panel {
-            background: var(--surface);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 2.5rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .glass-panel:hover {
-            border-color: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
-        }
-
-        h1 {
-            margin-top: 0;
-            font-size: 2rem;
-            font-weight: 600;
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #e0e7ff 0%, #a5b4fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-        }
-
-        p.subtitle {
-            color: var(--text-muted);
-            margin-bottom: 2.5rem;
-            font-size: 1rem;
-            line-height: 1.5;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.6rem;
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: var(--text-muted);
-            transition: color 0.3s;
-        }
-
-        input {
-            width: 100%;
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text);
-            padding: 1rem 1.2rem;
-            border-radius: 12px;
-            font-family: inherit;
-            font-size: 1rem;
-            outline: none;
-            transition: all 0.3s;
-            box-sizing: border-box;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .form-group:focus-within label {
-            color: var(--text);
-        }
-
-        input:focus {
-            border-color: var(--primary);
-            background: rgba(15, 23, 42, 0.8);
-            box-shadow: 0 0 0 3px var(--primary-glow), inset 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        button.run-btn {
-            width: 100%;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
-            color: white;
-            border: none;
-            padding: 1.2rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            border-radius: 12px;
-            cursor: pointer;
-            box-shadow: 0 10px 20px -10px var(--primary);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-family: inherit;
-            margin-top: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        button.run-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 25px -10px var(--primary);
-            filter: brightness(1.1);
-        }
-        
-        button.run-btn:active:not(:disabled) {
-            transform: translateY(1px);
-        }
-
-        button.run-btn:disabled {
-            background: rgba(255,255,255,0.05);
-            color: var(--text-muted);
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        .terminal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .terminal {
-            flex-grow: 1;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 14px;
-            padding: 1.5rem;
-            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-            font-size: 0.9rem;
-            color: var(--accent);
-            overflow-y: auto;
-            min-height: 400px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.05);
-            scroll-behavior: smooth;
-        }
-
-        .terminal::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .terminal::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.2);
-            border-radius: 4px;
-        }
-
-        .terminal::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.1);
-            border-radius: 4px;
-        }
-
-        .terminal p {
-            margin: 0 0 8px 0;
-            line-height: 1.5;
-            word-break: break-all;
-        }
-        
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.4rem 1rem;
-            background: rgba(100, 116, 139, 0.15);
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            border: 1px solid rgba(255,255,255,0.05);
-            color: var(--text-muted);
-            transition: all 0.3s;
-        }
-
-        .status-badge.running {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--accent);
-            border-color: rgba(16, 185, 129, 0.2);
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
-        }
-        
-        .status-badge.running::before {
-            content: '';
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--accent);
-            border-radius: 50%;
-            margin-right: 8px;
-            box-shadow: 0 0 8px var(--accent);
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 0.4; }
-            50% { opacity: 1; }
-            100% { opacity: 0.4; }
-        }
-
-        .loader {
-            display: none;
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 0.8s linear infinite;
-        }
-
-        button.running .loader {
-            display: block;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        @media (max-width: 900px) {
-            .container {
-                grid-template-columns: 1fr;
-                padding: 1rem;
-            }
-            body {
-                align-items: flex-start;
-                padding-top: 2rem;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DIA · Gobierno del Dato — Glosario de Negocio</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#6366f1; --primary2:#8b5cf6; --bg:#0b1120; --surface:#131c31;
+    --surface2:#1b2740; --line:rgba(255,255,255,.08); --text:#f1f5f9; --muted:#94a3b8;
+    --green:#10b981; --amber:#f59e0b; --red:#f43f5e; --blue:#38bdf8;
+  }
+  *{box-sizing:border-box}
+  body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);margin:0;
+    background-image:radial-gradient(at 0% 0%,rgba(99,102,241,.12) 0,transparent 45%),
+      radial-gradient(at 100% 0%,rgba(139,92,246,.10) 0,transparent 45%);min-height:100vh}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 22px 60px}
+  header{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+  .logo{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,var(--primary),var(--primary2));
+    display:grid;place-items:center;font-weight:700;font-size:1.1rem;box-shadow:0 8px 20px -8px var(--primary)}
+  h1{font-size:1.5rem;font-weight:600;margin:0;letter-spacing:-.4px}
+  .sub{color:var(--muted);font-size:.92rem;margin:2px 0 22px}
+  /* tabs */
+  .tabs{display:flex;gap:8px;margin-bottom:22px;border-bottom:1px solid var(--line)}
+  .tab{padding:12px 18px;color:var(--muted);cursor:pointer;font-weight:500;border-bottom:2px solid transparent;
+    transition:.2s;white-space:nowrap}
+  .tab:hover{color:var(--text)}
+  .tab.active{color:var(--text);border-color:var(--primary)}
+  .panel{display:none;animation:fade .25s ease}
+  .panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:18px}
+  .row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+  .fg{flex:1;min-width:160px}
+  label{display:block;font-size:.82rem;color:var(--muted);margin-bottom:6px;font-weight:500}
+  input,select{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--text);
+    padding:.8rem .9rem;border-radius:10px;font-family:inherit;font-size:.95rem;outline:none;transition:.2s}
+  input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(99,102,241,.2)}
+  .btn{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;border:none;
+    padding:.85rem 1.4rem;font-size:.98rem;font-weight:600;border-radius:10px;cursor:pointer;font-family:inherit;
+    display:inline-flex;align-items:center;gap:8px;transition:.2s;box-shadow:0 10px 20px -12px var(--primary)}
+  .btn:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.08)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn.ghost{background:transparent;border:1px solid var(--line);box-shadow:none;color:var(--text)}
+  /* summary */
+  .kpis{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+  .kpi{flex:1;min-width:140px;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .kpi .n{font-size:1.7rem;font-weight:700}
+  .kpi .l{color:var(--muted);font-size:.82rem;margin-top:2px}
+  .bar{height:8px;border-radius:6px;background:var(--surface2);overflow:hidden;margin-top:10px}
+  .bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--blue))}
+  /* table */
+  .tablewrap{overflow:auto;border:1px solid var(--line);border-radius:14px;max-height:60vh}
+  table{width:100%;border-collapse:collapse;font-size:.88rem;min-width:820px}
+  th{position:sticky;top:0;background:var(--surface2);text-align:left;padding:11px 12px;color:var(--muted);
+    font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.4px;z-index:1}
+  td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:middle}
+  tr.pending{background:rgba(244,63,94,.05)}
+  tr.pending td:first-child{box-shadow:inset 3px 0 0 var(--red)}
+  tr.ok td:first-child{box-shadow:inset 3px 0 0 var(--green)}
+  tr.approx td:first-child{box-shadow:inset 3px 0 0 var(--amber)}
+  .mono{font-family:'Menlo',monospace;font-size:.84rem}
+  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:.72rem;font-weight:600}
+  .b-ok{background:rgba(16,185,129,.15);color:var(--green)}
+  .b-approx{background:rgba(245,158,11,.15);color:var(--amber)}
+  .b-none{background:rgba(244,63,94,.15);color:var(--red)}
+  td input{padding:.5rem .6rem;font-size:.85rem}
+  .mini{background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:8px;
+    cursor:pointer;padding:0 10px;font-size:1rem;line-height:1}
+  .mini:hover:not(:disabled){filter:brightness(1.3)}
+  .def{color:var(--muted);max-width:340px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .hint{color:var(--muted);font-size:.85rem;line-height:1.5}
+  pre{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:16px;overflow:auto;
+    font-family:'Menlo',monospace;font-size:.8rem;color:var(--blue);max-height:340px}
+  .empty{color:var(--muted);text-align:center;padding:40px}
+  /* terminal (tab IA) */
+  .terminal{background:#05080f;border:1px solid var(--line);border-radius:12px;padding:16px;font-family:'Menlo',monospace;
+    font-size:.85rem;color:var(--green);min-height:320px;max-height:60vh;overflow:auto}
+  .terminal p{margin:0 0 6px}
+  .spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;
+    animation:sp .8s linear infinite;display:none}
+  .btn.loading .spin{display:block}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .toast{color:var(--muted);font-size:.85rem;margin-top:10px}
+</style>
 </head>
 <body>
+<div class="wrap">
+  <header>
+    <div class="logo">DIA</div>
+    <div>
+      <h1>Gobierno del Dato · Glosario de Negocio</h1>
+    </div>
+  </header>
+  <p class="sub">Onboarding de tablas nuevas contra el glosario central y generación asistida por IA.</p>
 
-    <div class="container">
-        <!-- Configuration Panel -->
-        <div class="glass-panel">
-            <h1>Agent Builder</h1>
-            <p class="subtitle">AI Data Governance & Glossary Generator</p>
+  <div class="tabs">
+    <div class="tab active" data-t="onboard">🔎 Onboarding de tabla</div>
+    <div class="tab" data-t="ai">✨ Generar glosario (IA)</div>
+  </div>
 
-            <div class="form-group">
-                <label>Target Dataplex Glossary ID</label>
-                <input type="text" id="glossaryId" value="business-glossary-v1" style="border-color: var(--primary);">
-            </div>
-
-            <div class="form-group">
-                <label>Glosarry Display Name (Dataplex UI)</label>
-                <input type="text" id="glossaryDisplayName" value="Business Glossary">
-            </div>
-
-            <div class="form-group">
-                <label>Data Source (Origen de Datos)</label>
-                <select id="dataSource" onchange="toggleDataSource()" style="width: 100%; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text); padding: 1rem 1.2rem; border-radius: 12px; font-family: inherit; font-size: 1rem; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); appearance: none;">
-                    <option value="bigquery" style="background: var(--surface);">BigQuery Metadata</option>
-                    <option value="google_drive" style="background: var(--surface);">Google Drive PDFs</option>
-                </select>
-            </div>
-
-            <div id="bqFields">
-                <div class="form-group">
-                    <label>BigQuery Metadata Dataset</label>
-                    <input type="text" id="dataset" value="pharmaceutical_drugs">
-                </div>
-            </div>
-
-            <div id="driveFields" style="display: none;">
-                <div class="form-group">
-                    <label>Google Drive Folder ID</label>
-                    <input type="text" id="driveFolderId" placeholder="Ej. 1A2bC3dE4fG5hI6jK7... (Carpeta con PDFs)">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>GCP Project ID</label>
-                <input type="text" id="projectId" value="pg-gccoe-carlos-monteverde">
-            </div>
-
-            <div class="form-group">
-                <label>Location</label>
-                <input type="text" id="location" value="us">
-            </div>
-
-            <div class="form-group">
-                <label>Modo de Despliegue (Publish Mode)</label>
-                <select id="publishMode" style="width: 100%; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text); padding: 1rem 1.2rem; border-radius: 12px; font-family: inherit; font-size: 1rem; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); appearance: none;">
-                    <option value="pull_request" style="background: var(--surface);">Crear Pull Request en GitHub</option>
-                    <option value="direct_dataplex" style="background: var(--surface);">Publicar en Dataplex Directamente (Peligro)</option>
-                </select>
-            </div>
-
-            <!-- Spacer -->
-            <div style="flex-grow: 1;"></div>
-
-            <button class="run-btn" id="runBtn" onclick="runAgent()">
-                <span>Ejecutar Agente</span>
-                <div class="loader"></div>
-            </button>
-        </div>
-
-        <!-- Terminal Panel -->
-        <div class="glass-panel logs-container">
-            <div class="terminal-header">
-                <h1 style="font-size: 1.5rem; margin: 0;">Execution Logs</h1>
-                <span class="status-badge" id="statusBadge">Ready</span>
-            </div>
-            <div class="terminal" id="terminal">
-                <p style="color: var(--text-muted);">[System] Esperando configuración de inicio...</p>
-            </div>
-        </div>
+  <!-- ===================== ONBOARDING ===================== -->
+  <div class="panel active" id="p-onboard">
+    <div class="card">
+      <div class="row">
+        <div class="fg"><label>Proyecto GCP</label><input id="o-project" value="dia-es-sara-dev"></div>
+        <div class="fg"><label>Dataset</label><input id="o-dataset" value="dia_es_dev_sara_golden"></div>
+        <div class="fg"><label>Tabla nueva</label><input id="o-table" value="gld_sara_poc_sales_features_v5"></div>
+        <button class="btn" id="scanBtn" onclick="scan()"><span>Escanear tabla</span><div class="spin"></div></button>
+      </div>
+      <p class="hint" style="margin:12px 0 0">Lee el esquema en BigQuery y hace un <b>buscarV</b> contra el glosario de negocio: identifica columnas ya definidas y deja en <b>“-”</b> las nuevas para que las completes y retroalimentar el glosario (vía validación / MR).</p>
     </div>
 
-    <script>
-        let eventSource = null;
+    <div id="o-results" style="display:none">
+      <div class="kpis">
+        <div class="kpi"><div class="n" id="k-total">0</div><div class="l">Columnas</div></div>
+        <div class="kpi"><div class="n" style="color:var(--green)" id="k-match">0</div><div class="l">Identificadas</div></div>
+        <div class="kpi"><div class="n" style="color:var(--red)" id="k-pending">0</div><div class="l">Pendientes (“-”)</div></div>
+        <div class="kpi"><div class="n" id="k-cov">0%</div><div class="l">Cobertura<div class="bar"><i id="k-bar" style="width:0"></i></div></div></div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <div class="tablewrap">
+          <table id="o-table-el">
+            <thead><tr>
+              <th>Columna</th><th>Tipo</th><th>Término de negocio</th><th>Definición</th>
+              <th>Glosario · Categoría</th><th>Confianza</th>
+            </tr></thead>
+            <tbody id="o-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <p class="hint" id="o-note"></p>
+        <button class="btn" id="proposeBtn" onclick="propose()"><span>Generar propuesta</span><div class="spin"></div></button>
+      </div>
+      <div class="card" id="o-proposal" style="display:none;margin-top:16px">
+        <b id="o-prop-title"></b>
+        <p class="toast" id="o-prop-path"></p>
+        <pre id="o-prop-yaml"></pre>
+        <p class="hint">Estos ficheros quedan como <b>propuesta</b> en <code>dataplex-sara/proposals/</code>. Flujo de validación: abrir MR → revisa el <b>Data Steward</b> → merge → <code>publish_all.py</code> los publica en Dataplex.</p>
+      </div>
+    </div>
+  </div>
 
-        function toggleDataSource() {
-            const dataSource = document.getElementById('dataSource').value;
-            if (dataSource === 'bigquery') {
-                document.getElementById('bqFields').style.display = 'block';
-                document.getElementById('driveFields').style.display = 'none';
-            } else {
-                document.getElementById('bqFields').style.display = 'none';
-                document.getElementById('driveFields').style.display = 'block';
-            }
-        }
+  <!-- ===================== IA ===================== -->
+  <div class="panel" id="p-ai">
+    <div class="card">
+      <div class="row">
+        <div class="fg"><label>Glossary ID (Dataplex)</label><input id="glossaryId" value="business-glossary-v1"></div>
+        <div class="fg"><label>Nombre visible</label><input id="glossaryDisplayName" value="Business Glossary"></div>
+      </div>
+      <div class="row" style="margin-top:14px">
+        <div class="fg"><label>Origen</label>
+          <select id="dataSource" onchange="toggleSrc()"><option value="bigquery">BigQuery Metadata</option><option value="google_drive">Google Drive PDFs</option></select></div>
+        <div class="fg" id="bqField"><label>Dataset BigQuery</label><input id="dataset" value="pharmaceutical_drugs"></div>
+        <div class="fg" id="driveField" style="display:none"><label>Drive Folder ID</label><input id="driveFolderId" placeholder="1A2bC3..."></div>
+      </div>
+      <div class="row" style="margin-top:14px">
+        <div class="fg"><label>GCP Project</label><input id="projectId" value="pg-gccoe-carlos-monteverde"></div>
+        <div class="fg"><label>Location</label><input id="location" value="us"></div>
+        <div class="fg"><label>Modo</label>
+          <select id="publishMode"><option value="pull_request">Crear Pull Request</option><option value="direct_dataplex">Publicar directo (⚠)</option></select></div>
+        <button class="btn" id="runBtn" onclick="runAgent()"><span>Ejecutar agente</span><div class="spin"></div></button>
+      </div>
+    </div>
+    <div class="card"><div class="terminal" id="terminal"><p style="color:var(--muted)">[System] Esperando…</p></div></div>
+  </div>
+</div>
 
-        function scrollTerminalToBottom() {
-            const terminal = document.getElementById('terminal');
-            terminal.scrollTop = terminal.scrollHeight;
-        }
+<script>
+// ---- tabs ----
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); document.getElementById('p-'+t.dataset.t).classList.add('active');
+});
+const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-        function appendLog(message) {
-            const terminal = document.getElementById('terminal');
-            const p = document.createElement('p');
-            
-            // Premium Log Coloring
-            let color = '#a78bfa'; // Default purple-ish
-            
-            if(message.includes('🚀')) color = '#f8fafc'; // White for kicks
-            else if(message.includes('✅')) color = 'var(--accent)'; 
-            else if(message.includes('❌') || message.includes('Error')) color = 'var(--error)';
-            else if(message.includes('🧹') || message.includes('🔍')) color = '#38bdf8'; // Blue
-            else if(message.includes('⚠️')) color = '#f59e0b'; // Yellow/Orange
-            else if(message.includes('DEBUG:')) color = '#64748b'; // Muted
-            
-            p.style.color = color;
-            p.textContent = `> ${message}`;
-            terminal.appendChild(p);
-            scrollTerminalToBottom();
-        }
+// ---- ONBOARDING ----
+let scanData=null;
+async function scan(){
+  const btn=document.getElementById('scanBtn'); btn.classList.add('loading'); btn.disabled=true;
+  try{
+    const r=await fetch('/onboard/scan',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({project:o('o-project'),dataset:o('o-dataset'),table:o('o-table')})});
+    const d=await r.json();
+    if(!d.ok) throw new Error(d.error);
+    scanData=d; renderScan(d);
+  }catch(e){alert('Error al escanear: '+e.message);}
+  btn.classList.remove('loading'); btn.disabled=false;
+}
+function renderScan(d){
+  document.getElementById('o-results').style.display='block';
+  document.getElementById('k-total').textContent=d.total;
+  document.getElementById('k-match').textContent=d.matched;
+  document.getElementById('k-pending').textContent=d.pending;
+  document.getElementById('k-cov').firstChild.textContent=d.coverage+'%';
+  document.getElementById('k-bar').style.width=d.coverage+'%';
+  document.getElementById('o-note').innerHTML=`Revisa y completa los <b>${d.pending}</b> pendientes; luego genera la propuesta.`;
+  document.getElementById('o-proposal').style.display='none';
+  const tb=document.getElementById('o-tbody'); tb.innerHTML='';
+  d.rows.forEach((row,i)=>{
+    const tr=document.createElement('tr');
+    const cls=row.confidence==='exacta'?'ok':row.confidence==='aproximada'?'approx':'pending';
+    tr.className=cls; tr.dataset.i=i; tr.dataset.term_id=row.term_id||'';
+    tr.dataset.column=row.column; tr.dataset.type=row.type;
+    let termCell, defCell, glossCell, badge;
+    if(cls==='pending'){
+      termCell=`<div style="display:flex;gap:6px"><input data-f="new_term" placeholder="Término">
+        <button class="mini" title="Sugerir con IA" onclick="suggest(this)">✨</button></div>
+        <input type="hidden" data-f="new_overview"><input type="hidden" data-f="new_synonyms">`;
+      defCell=`<input data-f="new_definition" placeholder="Definición">`;
+      glossCell=`<div style="display:flex;gap:6px"><input data-f="new_domain" placeholder="dominio" style="width:96px">
+        <input data-f="new_category" placeholder="categoría" style="width:96px"></div>`;
+      badge=`<span class="badge b-none">sin match</span>`;
+    }else{
+      termCell=`<b>${esc(row.term)}</b>`;
+      defCell=`<span class="def" title="${esc(row.definition)}">${esc(row.definition)}</span>`;
+      glossCell=`<span style="color:var(--muted);font-size:.82rem">${esc(row.glossary)} · ${esc(row.category)}</span>`;
+      badge=`<span class="badge ${cls==='ok'?'b-ok':'b-approx'}">${row.confidence}</span>`;
+    }
+    tr.innerHTML=`<td class="mono">${esc(row.column)}</td><td class="mono" style="color:var(--muted)">${esc(row.type)}</td>
+      <td>${termCell}</td><td>${defCell}</td><td>${glossCell}</td><td>${badge}</td>`;
+    tb.appendChild(tr);
+  });
+}
+async function propose(){
+  const btn=document.getElementById('proposeBtn'); btn.classList.add('loading'); btn.disabled=true;
+  const rows=[...document.querySelectorAll('#o-tbody tr')].map(tr=>{
+    const r={column:tr.querySelector('td').textContent, term_id:tr.dataset.term_id};
+    tr.querySelectorAll('input[data-f]').forEach(inp=>{ if(inp.value.trim()) r[inp.dataset.f]=inp.value.trim(); });
+    return r;
+  });
+  try{
+    const res=await fetch('/onboard/propose',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({asset:scanData.asset,rows})});
+    const d=await res.json(); if(!d.ok) throw new Error(d.error);
+    document.getElementById('o-proposal').style.display='block';
+    document.getElementById('o-prop-title').textContent=
+      `Propuesta: ${d.links_count} enlaces columna→término · ${d.new_terms_count} términos nuevos · ${d.pending_count} pendientes`;
+    document.getElementById('o-prop-path').textContent='Escrito en: '+d.path;
+    document.getElementById('o-prop-yaml').textContent=d.links_yaml+(d.terms_yaml?'\n\n'+d.terms_yaml:'');
+    document.getElementById('o-proposal').scrollIntoView({behavior:'smooth'});
+  }catch(e){alert('Error: '+e.message);}
+  btn.classList.remove('loading'); btn.disabled=false;
+}
+async function suggest(btn){
+  const tr=btn.closest('tr'); btn.disabled=true; btn.textContent='…';
+  try{
+    const r=await fetch('/onboard/suggest',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({column:tr.dataset.column,type:tr.dataset.type,asset:scanData.asset,
+        term_name:tr.querySelector('[data-f=new_term]').value})});
+    const d=await r.json(); if(!d.ok) throw new Error(d.error);
+    const set=(f,v)=>{const el=tr.querySelector(`[data-f=${f}]`); if(el) el.value=v||'';};
+    set('new_term',d.name); set('new_definition',d.definition); set('new_overview',d.overview);
+    set('new_domain',d.domain); set('new_category',d.category); set('new_synonyms',(d.synonyms||[]).join(', '));
+  }catch(e){alert('IA no disponible: '+e.message+'\n(rellena los campos manualmente)');}
+  btn.disabled=false; btn.textContent='✨';
+}
+const o=id=>document.getElementById(id).value;
 
-        async function runAgent() {
-            const btn = document.getElementById('runBtn');
-            const terminal = document.getElementById('terminal');
-            const badge = document.getElementById('statusBadge');
-            
-            // Prepare UI state for running
-            btn.classList.add('running');
-            btn.disabled = true;
-            btn.querySelector('span').textContent = 'Ejecutando...';
-            
-            terminal.innerHTML = '';
-            appendLog('Inicializando proceso en backend...');
-            
-            badge.className = 'status-badge running';
-            badge.textContent = 'Active Process';
-            
-            const payload = {
-                project_id: document.getElementById('projectId').value,
-                location: document.getElementById('location').value,
-                target_dataset: document.getElementById('dataset').value,
-                glossary_id: document.getElementById('glossaryId').value,
-                glossary_display_name: document.getElementById('glossaryDisplayName').value,
-                data_source: document.getElementById('dataSource').value,
-                drive_folder_id: document.getElementById('driveFolderId').value,
-                publish_mode: document.getElementById('publishMode').value
-            };
-
-            // Setup Server-Sent Events for Logs
-            if(eventSource) eventSource.close();
-            eventSource = new EventSource('/stream');
-            
-            eventSource.onmessage = function(event) {
-                if (event.data === "DONE") {
-                    eventSource.close();
-                    
-                    // Reset UI
-                    btn.classList.remove('running');
-                    btn.disabled = false;
-                    btn.querySelector('span').textContent = 'Ejecutar Agente';
-                    
-                    badge.className = 'status-badge';
-                    badge.textContent = 'Completed';
-                    badge.style.background = 'rgba(16, 185, 129, 0.15)';
-                    badge.style.color = 'var(--accent)';
-                    badge.style.borderColor = 'var(--accent)';
-                } else {
-                    appendLog(event.data);
-                }
-            };
-
-            // Send trigger request
-            try {
-                const response = await fetch('/run', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                if(!response.ok) {
-                    throw new Error("HTTP " + response.status);
-                }
-            } catch (err) {
-                appendLog(`❌ Invocación fallida: ${err.message}`);
-                btn.classList.remove('running');
-                btn.disabled = false;
-                btn.querySelector('span').textContent = 'Ejecutar Agente';
-                eventSource.close();
-            }
-        }
-    </script>
+// ---- IA (agente original) ----
+let es=null;
+function toggleSrc(){const v=o('dataSource');document.getElementById('bqField').style.display=v==='bigquery'?'block':'none';document.getElementById('driveField').style.display=v==='bigquery'?'none':'block';}
+function log(m){const t=document.getElementById('terminal');const p=document.createElement('p');
+  let c='#a78bfa'; if(m.includes('✅'))c='var(--green)';else if(m.includes('❌')||m.includes('Error'))c='var(--red)';
+  else if(m.includes('🔍')||m.includes('🧹'))c='var(--blue)';else if(m.includes('⚠'))c='var(--amber)';
+  p.style.color=c;p.textContent='> '+m;t.appendChild(p);t.scrollTop=t.scrollHeight;}
+async function runAgent(){
+  const btn=document.getElementById('runBtn');btn.classList.add('loading');btn.disabled=true;
+  document.getElementById('terminal').innerHTML='';log('Inicializando…');
+  const payload={project_id:o('projectId'),location:o('location'),target_dataset:o('dataset'),
+    glossary_id:o('glossaryId'),glossary_display_name:o('glossaryDisplayName'),data_source:o('dataSource'),
+    drive_folder_id:document.getElementById('driveFolderId').value,publish_mode:o('publishMode')};
+  if(es)es.close(); es=new EventSource('/stream');
+  es.onmessage=e=>{ if(e.data==='DONE'){es.close();btn.classList.remove('loading');btn.disabled=false;} else log(e.data); };
+  try{ const r=await fetch('/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+  }catch(err){log('❌ '+err.message);btn.classList.remove('loading');btn.disabled=false;es&&es.close();}
+}
+</script>
 </body>
 </html>
