@@ -1,10 +1,14 @@
 """
 glossary_matcher.py — "BuscarV" de una tabla BigQuery nueva contra el glosario de negocio
-central (repo dataplex-sara, fuente de verdad).
+central (repo de gobierno del cliente, fuente de verdad — ver GOVERNANCE_REPO_PATH).
 
 Para cada columna busca un término existente por nombre de columna, sinónimo o nombre de término
 (match exacto o difuso). Si no lo encuentra, la deja en '-' para que un humano la complete y así
 retroalimentar el glosario (vía MR / validación).
+
+Genérico por diseño: no asume ningún cliente ni convención de nombrado de dominios. El nombre
+de cada glosario de dominio se lee de su propio `_glossary.yaml` (`glossary.display_name`),
+nunca hardcodeado.
 """
 from __future__ import annotations
 
@@ -15,23 +19,32 @@ from pathlib import Path
 
 import yaml
 
-DOMAIN_GLOSSARY = {
-    "comm": "DIA – Comercial",
-    "ops": "DIA – Operaciones",
-    "sc": "DIA – Supply Chain",
-}
-
 
 def _norm(s: str) -> str:
     return re.sub(r"[^a-z0-9]", "", str(s).lower())
 
 
 def governance_repo() -> Path:
-    """Ruta al repo de gobierno (dataplex-sara). Env GOVERNANCE_REPO_PATH o hermano en Desktop."""
+    """Ruta al repo de gobierno del cliente (fuente de verdad del glosario). Requiere la
+    variable de entorno GOVERNANCE_REPO_PATH — sin ella no hay forma genérica de saber
+    a qué cliente/proyecto apuntar."""
     p = os.getenv("GOVERNANCE_REPO_PATH")
-    if p:
-        return Path(p)
-    return Path(__file__).resolve().parents[2] / "dataplex-sara"
+    if not p:
+        raise RuntimeError(
+            "GOVERNANCE_REPO_PATH no está configurada. Exporta la ruta al repo de gobierno "
+            "del cliente (Metadata as Code: glossary/, data_quality/, data_contracts/…)."
+        )
+    return Path(p)
+
+
+def _domain_display_name(domain_dir: Path, cache: dict[Path, str]) -> str:
+    """Nombre visible del glosario de dominio, leído de su _glossary.yaml (nunca hardcodeado)."""
+    if domain_dir not in cache:
+        meta_path = domain_dir / "_glossary.yaml"
+        meta = yaml.safe_load(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {}
+        g = (meta or {}).get("glossary", {})
+        cache[domain_dir] = g.get("display_name", domain_dir.name)
+    return cache[domain_dir]
 
 
 def build_index(repo: str | Path | None = None) -> tuple[dict, list]:
@@ -42,6 +55,7 @@ def build_index(repo: str | Path | None = None) -> tuple[dict, list]:
     terms: list[dict] = []
     if not domains.exists():
         return index, terms
+    display_cache: dict[Path, str] = {}
     for f in sorted(domains.rglob("*.yaml")):
         if f.name.startswith("_"):
             continue
@@ -54,7 +68,7 @@ def build_index(repo: str | Path | None = None) -> tuple[dict, list]:
                 "definition": " ".join((t.get("definition") or "").split()),
                 "domain": t.get("domain", data.get("glossary", "")),
                 "category": t.get("category", data.get("category", "")),
-                "glossary": DOMAIN_GLOSSARY.get(tid.split(".")[0], t.get("domain", "")),
+                "glossary": _domain_display_name(f.parent, display_cache),
             }
             terms.append(info)
             keys = {_norm(t.get("name", "")), _norm(tid.split(".")[-1])}
@@ -156,7 +170,7 @@ def suggest_term(column: str, dtype: str, asset: str, user_name: str = "") -> di
     location = os.getenv("VERTEX_LOCATION", "us-central1")
     model = os.getenv("VERTEX_MODEL", "gemini-2.5-flash")
 
-    prompt = f"""Eres un Data Steward de DIA definiendo un término de glosario de negocio.
+    prompt = f"""Eres un Data Steward definiendo un término de glosario de negocio.
 Columna técnica: `{column}` (tipo {dtype}) de la tabla `{asset}`.
 {"Nombre propuesto por el usuario: " + user_name if user_name else ""}
 
@@ -250,7 +264,7 @@ def build_proposal(asset: str, rows: list[dict]) -> dict:
 
 
 def write_proposal(asset: str, proposal: dict) -> str:
-    """Escribe la propuesta en dataplex-sara/proposals/<table>/ (borrador para MR)."""
+    """Escribe la propuesta en <repo-de-gobierno-del-cliente>/proposals/<table>/ (borrador para MR)."""
     table = asset.split(".")[-1]
     dest = governance_repo() / "proposals" / table
     dest.mkdir(parents=True, exist_ok=True)

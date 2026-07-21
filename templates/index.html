@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DIA · Gobierno del Dato — Glosario de Negocio</title>
+<title>AI Agent · Glosario de Negocio</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -88,7 +88,7 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="logo">DIA</div>
+    <div class="logo">AI</div>
     <div>
       <h1>Gobierno del Dato · Glosario de Negocio</h1>
     </div>
@@ -104,8 +104,8 @@
   <div class="panel active" id="p-onboard">
     <div class="card">
       <div class="row">
-        <div class="fg"><label>Proyecto GCP</label><input id="o-project" value="dia-es-sara-dev"></div>
-        <div class="fg"><label>Dataset</label><input id="o-dataset" value="dia_es_dev_sara_golden"></div>
+        <div class="fg"><label>Proyecto GCP</label><input id="o-project" value="" placeholder="proyecto-gcp"></div>
+        <div class="fg"><label>Dataset</label><input id="o-dataset" value="" placeholder="dataset"></div>
         <div class="fg"><label>Tabla nueva</label><input id="o-table" value="gld_sara_poc_sales_features_v5"></div>
         <button class="btn" id="scanBtn" onclick="scan()"><span>Escanear tabla</span><div class="spin"></div></button>
       </div>
@@ -138,7 +138,7 @@
         <b id="o-prop-title"></b>
         <p class="toast" id="o-prop-path"></p>
         <pre id="o-prop-yaml"></pre>
-        <p class="hint">Estos ficheros quedan como <b>propuesta</b> en <code>dataplex-sara/proposals/</code>. Flujo de validación: abrir MR → revisa el <b>Data Steward</b> → merge → <code>publish_all.py</code> los publica en Dataplex.</p>
+        <p class="hint">Estos ficheros quedan como <b>propuesta</b> en <code>proposals/</code> del repo de gobierno del cliente. Flujo de validación: abrir MR → revisa el <b>Data Steward</b> → merge → <code>publish_all.py</code> los publica en Dataplex.</p>
       </div>
     </div>
   </div>

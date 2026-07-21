@@ -1,18 +1,19 @@
 # 📘 Manual — Agente de Glosario de Negocio (business-glossary)
 
-Este repo es el **agente-pilar de Glosario** del gobierno del dato. Hoy contiene **dos flujos
-distintos** (dos pestañas de la misma UI) que conviene no confundir:
+Este repo es el **agente-pilar de Glosario** del gobierno del dato. Es genérico, multi-cliente:
+no asume ningún proyecto concreto, y hoy contiene **dos flujos distintos** (dos pestañas de la
+misma UI) que conviene no confundir:
 
 | | 🔎 Onboarding de tabla (buscarV) | 🤖 Generar glosario (IA) |
 |---|---|---|
 | **Qué hace** | Escanea una tabla NUEVA y la empareja columna a columna contra el glosario central existente; propone enlaces + términos nuevos | Escanea un dataset ENTERO desde cero y le pide a Gemini que invente una estructura de glosario completa |
-| **Fuente de verdad del glosario** | `dataplex-sara` (repo externo, real, el que se publica a Dataplex en `dia-es-sara-dev`) | Ninguna: genera un JSON nuevo, sin cruzar con nada existente |
-| **Destino de la propuesta** | `dataplex-sara/proposals/<tabla>/` (para Merge Request en GitLab) | Pull Request en **este** repo de GitHub |
-| **Publicación** | La hace `dataplex-sara/scripts/publish_all.py` (ver su `MANUAL.md`) | GitHub Actions de este repo (`.github/workflows/`), sobre el proyecto GCP `pg-gccoe-carlos-monteverde` |
-| **Estado** | ✅ Activo — es el que usa el [Hub de gobierno](../ai-agent-data-governance-hub) como pilar "glosario" | 🧪 Prototipo/demo original, funcional pero desconectado del flujo real de DIA |
+| **Fuente de verdad del glosario** | El **repo de gobierno del cliente** (`GOVERNANCE_REPO_PATH`; ej. real en DIA: `dataplex-sara`, publicado a `dia-es-sara-dev`) | Ninguna: genera un JSON nuevo, sin cruzar con nada existente |
+| **Destino de la propuesta** | `<repo-de-gobierno>/proposals/<tabla>/` (para Merge Request en GitLab) | Pull Request en **este** repo de GitHub |
+| **Publicación** | La hace `<repo-de-gobierno>/scripts/publish_all.py` (ver su manual) | GitHub Actions de este repo (`.github/workflows/`), sobre un proyecto GCP de demo |
+| **Estado** | ✅ Activo — es el que usa el [Hub de gobierno](../ai-agent-data-governance-hub) como pilar "glosario" | 🧪 Prototipo/demo original, funcional pero desconectado del flujo de cliente |
 | **Motor** | `modules/glossary_matcher.py` | `main.py` + `modules/business_glossary.py` + `core/github_client.py` |
 
-**Si tu duda es "cómo doy de alta una tabla nueva en el glosario de DIA", es la pestaña
+**Si tu duda es "cómo doy de alta una tabla nueva en el glosario del cliente", es la pestaña
 🔎 Onboarding la que quieres** — y probablemente prefieras usar el
 [Hub de gobierno](../ai-agent-data-governance-hub) (`ai-agent-data-governance-hub`), que orquesta
 este mismo motor junto con calidad, policy & control, productos y contratos en una sola pantalla.
@@ -27,14 +28,14 @@ python -m venv .venv && .venv\Scripts\activate      # Windows
 pip install -r requirements.txt
 gcloud auth application-default login
 
-# Solo para la pestaña Onboarding: apunta al repo de gobierno (fuente de verdad del glosario)
-set GOVERNANCE_REPO_PATH=C:\Users\Carlos Monteverde\Desktop\dataplex-sara
+# Obligatoria para la pestaña Onboarding: repo de gobierno del cliente (fuente de verdad)
+set GOVERNANCE_REPO_PATH=C:\ruta\al\repo-de-gobierno-del-cliente
 
 python app.py     # → http://localhost:5000
 ```
 
-Sin `GOVERNANCE_REPO_PATH`, `glossary_matcher.py` intenta usar el hermano `../dataplex-sara` por
-defecto (mismo Escritorio) — solo hace falta la variable si lo mueves de sitio.
+Sin `GOVERNANCE_REPO_PATH`, la pestaña Onboarding falla con un error explícito — no hay ningún
+repo por defecto asumido, para que este agente sirva igual a cualquier cliente.
 
 ---
 
@@ -44,17 +45,19 @@ defecto (mismo Escritorio) — solo hace falta la variable si lo mueves de sitio
 
 1. Escribes **proyecto.dataset.tabla** de BigQuery → `scan_table()` lee el esquema y hace un
    "buscarV" de cada columna contra el índice del glosario central (`glossary/domains/` +
-   `glossary/column_links/` de `dataplex-sara`, vía "efecto red": si otra tabla ya mapeó esa
+   `glossary/column_links/` del repo de gobierno, vía "efecto red": si otra tabla ya mapeó esa
    columna a un término, se reutiliza).
 2. Cada columna sale con: coincidencia **exacta**, **aproximada** (fuzzy, `difflib`) o **sin
    match** (queda en blanco `-` para completar a mano).
 3. Para una columna sin match, el botón ✨ (`suggest_term()`) le pide a Gemini un término
    completo (nombre, definición, overview, dominio, categoría, sinónimos), mapeando siempre a la
    **taxonomía ya existente** (no inventa dominios/categorías nuevas si ya hay uno que encaja).
+   El nombre de cada dominio se lee de su propio `_glossary.yaml` — no hay ninguna convención de
+   nombrado hardcodeada, funciona con la taxonomía que tenga cada cliente.
 4. Al aceptar, `build_proposal()` genera dos YAML (enlaces `column_links` + términos nuevos en
-   `DRAFT`) y `write_proposal()` los escribe en `dataplex-sara/proposals/<tabla>/`.
+   `DRAFT`) y `write_proposal()` los escribe en `<repo-de-gobierno>/proposals/<tabla>/`.
 5. Desde ahí, un Data Steward abre Merge Request en **GitLab** (no en este repo) y, al aprobarlo,
-   el pipeline de `dataplex-sara` publica a Dataplex. Detalle completo: `dataplex-sara/MANUAL.md`.
+   el pipeline del repo de gobierno publica a Dataplex. Detalle completo: el `MANUAL.md` de ese repo.
 
 ### 1.2 Motor (`modules/glossary_matcher.py`)
 
@@ -81,7 +84,7 @@ fino de las tres funciones de arriba.
 
 Genera un glosario **desde cero** para un dataset completo, sin cruzar con nada existente. Útil
 para explorar/demostrar, pero **no** es el camino para dar de alta tablas en el glosario real de
-DIA (para eso, sección 1).
+un cliente (para eso, sección 1).
 
 ```mermaid
 graph LR
@@ -95,7 +98,7 @@ graph LR
 ### 2.1 Cómo funciona
 
 1. `main.py` lee metadatos de BigQuery (o un PDF en Drive) del `TARGET_DATASET` configurado
-   (por defecto `pg-gccoe-carlos-monteverde` — **proyecto de demo, no el de DIA**).
+   (por defecto un **proyecto de demo/sandbox**, no el de ningún cliente real).
 2. `modules/business_glossary.py` (`BusinessGlossaryGenerator`) envía ese contexto a
    **Gemini 2.5 Flash**, que devuelve categorías + términos + descripciones.
 3. `core/github_client.py` (`PyGithub`) crea una rama y abre un **Pull Request en este repo de
@@ -123,15 +126,16 @@ Parámetros configurables como argumentos de `main()`: `project_id`, `location`,
 | Secreto | Para qué |
 |---|---|
 | `GCP_SA_KEY` | Service Account con **Data Catalog Admin** + **BigQuery Data Editor** |
-| `GCP_PROJECT_ID` | Proyecto GCP destino (demo: `pg-gccoe-carlos-monteverde`) |
+| `GCP_PROJECT_ID` | Proyecto GCP destino (sandbox/demo) |
 | Token de GitHub (`PyGithub`) | Para que `core/github_client.py` pueda abrir el PR |
 
-### 2.4 Motor reutilizado por `dataplex-sara`
+### 2.4 Motor reutilizado por el repo de gobierno del cliente
 
 `modules/dataplex_client.py` (`DataplexGlossaryClient`: `create_or_update_glossary`,
-`create_category`, `create_term`) es el **wrapper de la Business Glossary API** que
-`dataplex-sara/scripts/publish_glossary.py` importa vía `GOVERNANCE_AGENT_PATH` — por eso este
-repo sigue siendo necesario aunque no publiques nunca desde su propio flujo de PR de GitHub.
+`create_category`, `create_term`) es el **wrapper de la Business Glossary API** que el
+`scripts/publish_glossary.py` del repo de gobierno del cliente importa vía `GOVERNANCE_AGENT_PATH`
+— por eso este repo sigue siendo necesario aunque no publiques nunca desde su propio flujo de PR
+de GitHub.
 
 ---
 
@@ -147,13 +151,13 @@ arriba. Se deja como referencia histórica; si se retoma la idea de un agente co
 
 ## 4. 💡 Preguntas frecuentes
 
-**¿Qué pestaña uso para dar de alta una tabla nueva en el glosario de DIA?**
+**¿Qué pestaña uso para dar de alta una tabla nueva en el glosario del cliente?**
 🔎 Onboarding (sección 1) — o mejor, hazlo desde el [Hub de gobierno](../ai-agent-data-governance-hub),
 que además encadena calidad, policy & control y contrato en el mismo paso.
 
 **¿Onboarding también abre un Pull Request?**
-No en GitHub: escribe en `dataplex-sara/proposals/` y desde ahí se abre **Merge Request en
-GitLab** (botón 🦊 del Hub, o a mano — ver `dataplex-sara/MANUAL.md`).
+No en GitHub: escribe en `<repo-de-gobierno>/proposals/` y desde ahí se abre **Merge Request en
+GitLab** (botón 🦊 del Hub, o a mano — ver el `MANUAL.md` del repo de gobierno).
 
 **¿Qué pasa si rechazo el PR de la pestaña "Generar glosario (IA)"?**
 Nada se publica. El JSON se queda en la rama, sin tocar Dataplex.
@@ -164,3 +168,8 @@ Edita `TARGET_DATASET` en `main.py`, o pásalo como parámetro desde la UI.
 **¿Dónde veo logs de error?**
 Onboarding: en la propia respuesta JSON del endpoint. Generación IA: pestaña "Actions" de GitHub
 del workflow "Deploy Business Glossary", y evento `FAILED` en `glossary_audit_log` de BigQuery.
+
+**¿Cómo lo reutilizo para otro cliente?**
+No hace falta tocar código: exporta `GOVERNANCE_REPO_PATH` apuntando al repo de gobierno del
+nuevo cliente (misma estructura: `glossary/domains/`, `glossary/column_links/`) y arranca
+`python app.py`. El motor lee la taxonomía y los nombres de dominio directamente de ese repo.

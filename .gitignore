@@ -22,5 +22,12 @@ __pycache__/
 *.pyo
 *.pyd
 
+# Credenciales y entorno — NUNCA subir
+.env
+*.env
+sa.json
+service-account*.json
+application_default_credentials.json
+
 # Local outputs
 output/
